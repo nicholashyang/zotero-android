@@ -22,12 +22,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import java.util.Date
 import org.zotero.android.helpers.formatter.dateFormatItemDetails
 import org.zotero.android.screens.itemdetails.rows.ItemDetailsFieldRow
 import org.zotero.android.uicomponents.Drawables
 import org.zotero.android.uicomponents.Strings
 import org.zotero.android.uicomponents.foundation.safeClickable
-import java.util.Date
 
 
 @Composable
@@ -38,13 +38,13 @@ fun AddItemRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .heightIn(min = 56.dp)
             .safeClickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = ripple(),
                 onClick = onClick
             )
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -59,7 +59,7 @@ fun AddItemRow(
             text = stringResource(id = titleRes),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.primary,
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
     }
@@ -121,7 +121,7 @@ fun DatesRows(
 internal fun ItemDetailHeaderSection(
     sectionTitle: Int,
 ) {
-    Column(modifier = Modifier.height(28.dp), verticalArrangement = Arrangement.Center) {
+    Column(modifier = Modifier.heightIn(min = 28.dp), verticalArrangement = Arrangement.Center) {
         Text(
             modifier = Modifier,
             text = stringResource(id = sectionTitle),
@@ -130,5 +130,3 @@ internal fun ItemDetailHeaderSection(
         )
     }
 }
-
-

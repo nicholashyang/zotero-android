@@ -1,12 +1,14 @@
 package org.zotero.android.screens.collections.rows
 
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import org.zotero.android.architecture.ui.CustomLayoutSize
 import org.zotero.android.screens.collections.data.CollectionItemWithChildren
 import org.zotero.android.sync.CollectionIdentifier
+import org.zotero.android.uicomponents.library.LibraryGroupItem
 
 private val levelPaddingConst = 16.dp
 
@@ -21,11 +23,19 @@ internal fun LazyListScope.recursiveCollectionItem(
     onItemLongTapped: (item: CollectionItemWithChildren) -> Unit,
     onItemChevronTapped: (item: CollectionItemWithChildren) -> Unit,
 ) {
-    for (item in collectionItems) {
-        item {
+    val visible = mutableListOf<Pair<CollectionItemWithChildren, Dp>>()
+    fun appendVisible(items: ImmutableList<CollectionItemWithChildren>, indent: Dp) {
+        items.forEach { item ->
+            visible.add(item to indent)
+            if (!isCollapsed(item)) appendVisible(item.children, indent + levelPaddingConst)
+        }
+    }
+    appendVisible(collectionItems, levelPadding)
+    itemsIndexed(visible, key = { _, row -> row.first.collection.identifier.id }) { index, (item, indent) ->
+        LibraryGroupItem(first = index == 0, last = index == visible.lastIndex) {
             CollectionRowItem(
                 layoutType = layoutType,
-                levelPadding = levelPadding,
+                levelPadding = indent,
                 selectedCollectionId = selectedCollectionId,
                 collection = item.collection,
                 hasChildren = item.children.isNotEmpty(),
@@ -33,21 +43,7 @@ internal fun LazyListScope.recursiveCollectionItem(
                 isCollapsed = isCollapsed(item),
                 onItemTapped = { onItemTapped(item) },
                 onItemLongTapped = { onItemLongTapped(item) },
-                onItemChevronTapped = { onItemChevronTapped(item) }
-            )
-        }
-
-        if (!isCollapsed(item)) {
-            recursiveCollectionItem(
-                layoutType = layoutType,
-                levelPadding = levelPadding + levelPaddingConst,
-                collectionItems = item.children,
-                selectedCollectionId = selectedCollectionId,
-                showCollectionItemCounts = showCollectionItemCounts,
-                isCollapsed = isCollapsed,
-                onItemTapped = onItemTapped,
-                onItemLongTapped = onItemLongTapped,
-                onItemChevronTapped = onItemChevronTapped
+                onItemChevronTapped = { onItemChevronTapped(item) },
             )
         }
     }

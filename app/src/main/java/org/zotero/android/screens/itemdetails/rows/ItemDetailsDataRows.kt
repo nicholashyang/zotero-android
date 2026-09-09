@@ -16,7 +16,7 @@ internal fun ItemDetailsDataRows(
     viewState: ItemDetailsViewState,
     viewModel: ItemDetailsViewModel
 ) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         ItemDetailsFieldRow(
             detailTitle = stringResource(id = Strings.item_type),
             detailValue = viewState.data.localizedType,

@@ -11,18 +11,17 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import java.io.File
 import org.zotero.android.appupdate.MaybeShowAppUpdateBanner
 import org.zotero.android.architecture.ui.CustomLayoutSize
 import org.zotero.android.screens.allitems.bottomsheet.AllItemsAddBottomSheet
 import org.zotero.android.screens.allitems.table.AllItemsTable
-import org.zotero.android.uicomponents.CustomScaffoldM3
 import org.zotero.android.uicomponents.Strings
-import org.zotero.android.uicomponents.error.FullScreenError
+import org.zotero.android.uicomponents.library.LibraryErrorState
 import org.zotero.android.uicomponents.foundation.safeStringResource
+import org.zotero.android.uicomponents.library.LibraryScaffold
 import org.zotero.android.uicomponents.loading.BaseLceBox
 import org.zotero.android.uicomponents.loading.CircularLoading
-import org.zotero.android.uicomponents.themem3.AppThemeM3
-import java.io.File
 
 @Composable
 internal fun AllItemsScreen(
@@ -48,193 +47,192 @@ internal fun AllItemsScreen(
     onShowPdf: (String, String) -> Unit,
     onShowHtmlOrEpub: (String, String) -> Unit,
 ) {
-    AppThemeM3 {
-        val layoutType = CustomLayoutSize.calculateLayoutType()
-        val viewState by viewModel.viewStates.observeAsState(AllItemsViewState())
-        val viewEffect by viewModel.viewEffects.observeAsState()
-        val lazyListState = rememberLazyListState()
+    val layoutType = CustomLayoutSize.calculateLayoutType()
+    val viewState by viewModel.viewStates.observeAsState(AllItemsViewState())
+    val viewEffect by viewModel.viewEffects.observeAsState()
+    val lazyListState = rememberLazyListState()
 
-        val isTablet = layoutType.isTablet()
+    val isTablet = layoutType.isTablet()
 
-        if (!isTablet)  {
-            BackHandler(onBack = {
-                viewModel.navigateToCollections()
-            })
-        }
+    if (!isTablet)  {
+        BackHandler(onBack = {
+            viewModel.navigateToCollections()
+        })
+    }
 
-        LaunchedEffect(key1 = viewModel) {
-            viewModel.init(isTablet)
-        }
+    LaunchedEffect(key1 = viewModel) {
+        viewModel.init(isTablet)
+    }
 
-        LaunchedEffect(key1 = viewEffect) {
-            when (val consumedEffect = viewEffect?.consume()) {
-                null -> Unit
-                is AllItemsViewEffect.ShowCollectionsEffect -> navigateToCollectionsScreen(
-                    consumedEffect.screenArgs
-                )
+    LaunchedEffect(key1 = viewEffect) {
+        when (val consumedEffect = viewEffect?.consume()) {
+            null -> Unit
+            is AllItemsViewEffect.ShowCollectionsEffect -> navigateToCollectionsScreen(
+                consumedEffect.screenArgs
+            )
 
-                is AllItemsViewEffect.ShowItemDetailEffect -> navigateToItemDetails(consumedEffect.screenArgs)
-                is AllItemsViewEffect.ShowAddOrEditNoteEffect -> navigateToAddOrEditNote(
-                    consumedEffect.screenArgs
-                )
+            is AllItemsViewEffect.ShowItemDetailEffect -> navigateToItemDetails(consumedEffect.screenArgs)
+            is AllItemsViewEffect.ShowAddOrEditNoteEffect -> navigateToAddOrEditNote(
+                consumedEffect.screenArgs
+            )
 
-                is AllItemsViewEffect.ShowPhoneFilterEffect -> {
-                    navigateToTagFilter(consumedEffect.params)
-                }
+            is AllItemsViewEffect.ShowPhoneFilterEffect -> {
+                navigateToTagFilter(consumedEffect.params)
+            }
 
-                AllItemsViewEffect.ShowItemTypePickerEffect -> {
-                    navigateToSinglePicker()
-                }
+            AllItemsViewEffect.ShowItemTypePickerEffect -> {
+                navigateToSinglePicker()
+            }
 
-                is AllItemsViewEffect.ShowAddByIdentifierEffect -> {
-                    navigateToAddByIdentifier(consumedEffect.params)
-                }
+            is AllItemsViewEffect.ShowAddByIdentifierEffect -> {
+                navigateToAddByIdentifier(consumedEffect.params)
+            }
 
-                is AllItemsViewEffect.ShowRetrieveMetadataDialogEffect -> {
-                    navigateToRetrieveMetadata(consumedEffect.params)
-                }
+            is AllItemsViewEffect.ShowRetrieveMetadataDialogEffect -> {
+                navigateToRetrieveMetadata(consumedEffect.params)
+            }
 
-                AllItemsViewEffect.ShowSortPickerEffect -> {
-                    navigateToAllItemsSort()
-                }
+            AllItemsViewEffect.ShowSortPickerEffect -> {
+                navigateToAllItemsSort()
+            }
 
-                AllItemsViewEffect.ShowCollectionPickerEffect -> {
-                    navigateToCollectionPicker()
-                }
+            AllItemsViewEffect.ShowCollectionPickerEffect -> {
+                navigateToCollectionPicker()
+            }
 
-                AllItemsViewEffect.ScreenRefresh -> {
-                    //no-op
-                }
+            AllItemsViewEffect.ScreenRefresh -> {
+                //no-op
+            }
 
-                is AllItemsViewEffect.OpenFile -> onOpenFile(
-                    consumedEffect.file,
-                    consumedEffect.mimeType
-                )
+            is AllItemsViewEffect.OpenFile -> onOpenFile(
+                consumedEffect.file,
+                consumedEffect.mimeType
+            )
 
-                is AllItemsViewEffect.OpenWebpage -> onOpenWebpage(consumedEffect.url)
-                is AllItemsViewEffect.NavigateToPdfScreen -> {
-                    onShowPdf(consumedEffect.params, consumedEffect.encodedFilePath)
-                }
-                is AllItemsViewEffect.NavigateToReaderScreen -> {
-                    onShowHtmlOrEpub(consumedEffect.params, consumedEffect.readerEncodedFilePathParam)
-                }
+            is AllItemsViewEffect.OpenWebpage -> onOpenWebpage(consumedEffect.url)
+            is AllItemsViewEffect.NavigateToPdfScreen -> {
+                onShowPdf(consumedEffect.params, consumedEffect.encodedFilePath)
+            }
+            is AllItemsViewEffect.NavigateToReaderScreen -> {
+                onShowHtmlOrEpub(consumedEffect.params, consumedEffect.readerEncodedFilePathParam)
+            }
 
-                is AllItemsViewEffect.ShowVideoPlayer -> {
-                    navigateToVideoPlayerScreen()
-                }
+            is AllItemsViewEffect.ShowVideoPlayer -> {
+                navigateToVideoPlayerScreen()
+            }
 
-                is AllItemsViewEffect.ShowImageViewer -> {
-                    navigateToImageViewerScreen()
-                }
+            is AllItemsViewEffect.ShowImageViewer -> {
+                navigateToImageViewerScreen()
+            }
 
-                is AllItemsViewEffect.ShowZoteroWebView -> {
-                    navigateToZoterWebViewScreen(consumedEffect.url)
-                }
+            is AllItemsViewEffect.ShowZoteroWebView -> {
+                navigateToZoterWebViewScreen(consumedEffect.url)
+            }
 
-                is AllItemsViewEffect.ShowScanBarcode -> {
-                    navigateToScanBarcode()
-                }
+            is AllItemsViewEffect.ShowScanBarcode -> {
+                navigateToScanBarcode()
+            }
 
-                is AllItemsViewEffect.MaybeScrollToTop -> {
-                    val maybeIndex =
-                        lazyListState.layoutInfo.visibleItemsInfo.firstOrNull()?.index
-                    //Indices of the first visible item AFTER an update, so after the potential new item was added to the top.
-                    if (((1..2).contains(maybeIndex))) {
-                        lazyListState.scrollToItem(index = 0, scrollOffset = 0)
-                    }
-                }
-
-                AllItemsViewEffect.ShowSingleCitationEffect -> {
-                    navigateToSingleCitation()
-                }
-
-                AllItemsViewEffect.ShowCitationBibliographyExportEffect -> {
-                    navigateToCitationBibliographyExport()
+            is AllItemsViewEffect.MaybeScrollToTop -> {
+                val maybeIndex =
+                    lazyListState.layoutInfo.visibleItemsInfo.firstOrNull()?.index
+                //Indices of the first visible item AFTER an update, so after the potential new item was added to the top.
+                if (((1..2).contains(maybeIndex))) {
+                    lazyListState.scrollToItem(index = 0, scrollOffset = 0)
                 }
             }
-        }
-        val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-        CustomScaffoldM3(
-            scrollBehavior = scrollBehavior,
-            topBar = {
-                AllItemsTopBar(
-                    scrollBehavior = scrollBehavior,
-                    viewState = viewState,
-                    viewModel = viewModel,
-                    layoutType = layoutType,
+            AllItemsViewEffect.ShowSingleCitationEffect -> {
+                navigateToSingleCitation()
+            }
+
+            AllItemsViewEffect.ShowCitationBibliographyExportEffect -> {
+                navigateToCitationBibliographyExport()
+            }
+        }
+    }
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
+    LibraryScaffold(
+        scrollBehavior = scrollBehavior,
+        topBar = {
+            AllItemsTopBar(
+                scrollBehavior = scrollBehavior,
+                viewState = viewState,
+                viewModel = viewModel,
+                layoutType = layoutType,
+            )
+        },
+        bottomBar = {
+            AllItemsBottomPanelNew(
+                viewModel = viewModel,
+                viewState = viewState,
+            )
+        },
+    ) {
+
+        BaseLceBox(
+            modifier = Modifier.fillMaxSize(),
+            lce = viewState.lce,
+            error = { _ ->
+                LibraryErrorState(
+                    modifier = Modifier.align(Alignment.Center),
+                    errorTitle = safeStringResource(id = Strings.error_list_load_check_crash_logs),
                 )
             },
-            bottomBar = {
-                AllItemsBottomPanelNew(
-                    viewModel = viewModel,
-                    viewState = viewState,
-                )
+            loading = {
+                CircularLoading()
             },
         ) {
+            AllItemsTable(
+                lazyListState = lazyListState,
+                itemCellModels = viewState.itemCellModels,
+                isEditing = viewState.isEditing,
+                isRefreshing = viewState.isRefreshing,
+                isItemSelected = viewState::isSelected,
+                getItemAccessory = viewState::getAccessoryForItem,
+                onItemTapped = viewModel::onItemTapped,
+                onAccessoryTapped = viewModel::onAccessoryTapped,
+                onItemLongTapped = viewModel::onItemLongTapped,
+                onStartSync = viewModel::startSync,
+                isFiltered = !viewState.searchTerm.isNullOrBlank() || viewState.filters.isNotEmpty(),
+            )
 
-            BaseLceBox(
-                modifier = Modifier.fillMaxSize(),
-                lce = viewState.lce,
-                error = { _ ->
-                    FullScreenError(
-                        modifier = Modifier.align(Alignment.Center),
-                        errorTitle = safeStringResource(id = Strings.error_list_load_check_crash_logs),
-                    )
-                },
-                loading = {
-                    CircularLoading()
-                },
-            ) {
-                AllItemsTable(
-                    lazyListState = lazyListState,
-                    itemCellModels = viewState.itemCellModels,
-                    isEditing = viewState.isEditing,
-                    isRefreshing = viewState.isRefreshing,
-                    isItemSelected = viewState::isSelected,
-                    getItemAccessory = viewState::getAccessoryForItem,
-                    onItemTapped = viewModel::onItemTapped,
-                    onAccessoryTapped = viewModel::onAccessoryTapped,
-                    onItemLongTapped = viewModel::onItemLongTapped,
-                    onStartSync = viewModel::startSync
+            MaybeShowAppUpdateBanner(
+                appUpdateBannerPayload = viewState.appUpdateBannerPayload,
+                shouldShowAppUpdateBanner = viewState.shouldShowAppUpdateBanner,
+                onDownloadButtonTapped = viewModel::onAppUpdateDownloadButtonTapped,
+                onLaterButtonTapped = viewModel::onAppUpdateLaterButtonTapped
+            )
+
+            val itemsError = viewState.error
+            if (itemsError != null) {
+                ShowErrorOrDialog(
+                    itemsError = itemsError,
+                    onDismissDialog = viewModel::onDismissDialog,
+                    onDeleteItems = { viewModel.delete(it) },
+                    onEmptyTrash = { viewModel.emptyTrash() },
+                    deleteItemsFromCollection = { viewModel.deleteItemsFromCollection(it) },
                 )
+            }
 
-                MaybeShowAppUpdateBanner(
-                    appUpdateBannerPayload = viewState.appUpdateBannerPayload,
-                    shouldShowAppUpdateBanner = viewState.shouldShowAppUpdateBanner,
-                    onDownloadButtonTapped = viewModel::onAppUpdateDownloadButtonTapped,
-                    onLaterButtonTapped = viewModel::onAppUpdateLaterButtonTapped
-                )
-
-                val itemsError = viewState.error
-                if (itemsError != null) {
-                    ShowErrorOrDialog(
-                        itemsError = itemsError,
-                        onDismissDialog = viewModel::onDismissDialog,
-                        onDeleteItems = { viewModel.delete(it) },
-                        onEmptyTrash = { viewModel.emptyTrash() },
-                        deleteItemsFromCollection = { viewModel.deleteItemsFromCollection(it) },
-                    )
-                }
-
-                if (viewState.isGeneratingBibliography) {
-                    GeneratingBibliographyLoadingIndicator()
-                }
-                if (viewState.isGeneratingCitation) {
-                    GeneratingCitationLoadingIndicator()
-                }
+            if (viewState.isGeneratingBibliography) {
+                GeneratingBibliographyLoadingIndicator()
+            }
+            if (viewState.isGeneratingCitation) {
+                GeneratingCitationLoadingIndicator()
             }
         }
-        val bottomSheetTitle = safeStringResource(id = Strings.item_type)
-        AllItemsAddBottomSheet(
-            onScanBarcode = viewModel::onScanBarcode,
-            onAddFile = onPickFile,
-            onAddNote = viewModel::onAddNote,
-            onAddManually = { viewModel.onAddManually(bottomSheetTitle) },
-            onAddByIdentifier = viewModel::onAddByIdentifier,
-            onClose = viewModel::onAddBottomSheetCollapse,
-            showBottomSheet = viewState.shouldShowAddBottomSheet
-        )
-
     }
+    val bottomSheetTitle = safeStringResource(id = Strings.item_type)
+    AllItemsAddBottomSheet(
+        onScanBarcode = viewModel::onScanBarcode,
+        onAddFile = onPickFile,
+        onAddNote = viewModel::onAddNote,
+        onAddManually = { viewModel.onAddManually(bottomSheetTitle) },
+        onAddByIdentifier = viewModel::onAddByIdentifier,
+        onClose = viewModel::onAddBottomSheetCollapse,
+        showBottomSheet = viewState.shouldShowAddBottomSheet
+    )
+
 }

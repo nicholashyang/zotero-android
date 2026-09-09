@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import org.zotero.android.screens.allitems.data.ItemCellModel
 import org.zotero.android.uicomponents.Drawables
@@ -44,22 +46,24 @@ internal fun RowScope.ItemRowRightPart(
         if (isEditing) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
-                    .clickable(onClick = {
-                        onItemTapped(model)
-                    }),
+                    .size(48.dp)
+                    .toggleable(
+                        value = isItemSelected(model.key),
+                        role = Role.Checkbox,
+                        onValueChange = { onItemTapped(model) },
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 if (isItemSelected(model.key)) {
                     Icon(
                         painter = painterResource(Drawables.check_circle),
-                        contentDescription = null,
+                        contentDescription = safeStringResource(Strings.select),
                         tint = MaterialTheme.colorScheme.primary,
                     )
                 } else {
                     Icon(
                         painter = painterResource(Drawables.radio_button_unchecked),
-                        contentDescription = null,
+                        contentDescription = safeStringResource(Strings.select),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
@@ -83,7 +87,7 @@ internal fun RowScope.ItemRowRightPart(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(48.dp)
                         .clickable(onClick = {
                             onAccessoryTapped(model.key)
                         }),
@@ -91,7 +95,7 @@ internal fun RowScope.ItemRowRightPart(
                 ) {
                     Icon(
                         painter = painterResource(Drawables.info_24px),
-                        contentDescription = null,
+                        contentDescription = safeStringResource(Strings.all_items_details),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
@@ -99,5 +103,3 @@ internal fun RowScope.ItemRowRightPart(
         }
     }
 }
-
-

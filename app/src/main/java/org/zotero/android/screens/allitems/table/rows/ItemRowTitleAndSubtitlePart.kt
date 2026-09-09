@@ -1,13 +1,19 @@
 package org.zotero.android.screens.allitems.table.rows
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +32,7 @@ internal fun RowScope.ItemRowTitleAndSubtitlePart(model: ItemCellModel) {
     ) {
         Text(
             text = model.title.ifEmpty { " " },
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.bodyLarge,
@@ -40,6 +46,7 @@ internal fun RowScope.ItemRowTitleAndSubtitlePart(model: ItemCellModel) {
                 subtitleText = ""
             }
             Text(
+                modifier = Modifier.weight(1f, fill = false),
                 text = subtitleText,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
@@ -57,6 +64,17 @@ internal fun RowScope.ItemRowTitleAndSubtitlePart(model: ItemCellModel) {
                     painter = painterResource(id = Drawables.cell_note),
                     contentDescription = null,
                 )
+            }
+        }
+        if (model.tagColors.isNotEmpty()) {
+            FlowRow(
+                modifier = Modifier.padding(top = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                model.tagColors.forEach { color ->
+                    Box(Modifier.size(6.dp).background(color, CircleShape))
+                }
             }
         }
     }

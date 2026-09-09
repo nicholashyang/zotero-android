@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
@@ -16,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -25,8 +28,10 @@ import org.zotero.android.architecture.ui.CustomLayoutSize
 import org.zotero.android.sync.Collection
 import org.zotero.android.sync.CollectionIdentifier
 import org.zotero.android.uicomponents.Drawables
+import org.zotero.android.uicomponents.Strings
 import org.zotero.android.uicomponents.foundation.debounceCombinedClickable
-import org.zotero.android.uicomponents.icon.IconWithPadding
+import org.zotero.android.uicomponents.library.LibraryIconButton
+import org.zotero.android.uicomponents.library.LibraryMetrics
 
 @Composable
 internal fun CollectionRowItem(
@@ -41,12 +46,12 @@ internal fun CollectionRowItem(
     onItemLongTapped: () -> Unit,
     onItemChevronTapped: () -> Unit,
 ) {
-    var rowModifier: Modifier = Modifier.height(48.dp)
+    var rowModifier: Modifier = Modifier.fillMaxWidth().heightIn(min = LibraryMetrics.minimumRowHeight)
     if (layoutType.isTablet() && selectedCollectionId == collection.identifier) {
         rowModifier = rowModifier.background(color = MaterialTheme.colorScheme.secondaryContainer)
     }
     val arrowIconAreaSize = 48.dp
-    val mainIconSize = 28.dp
+    val mainIconSize = 24.dp
     val paddingBetweenIconAndText = 12.dp
     val paddingBetweenArrowAndIcon = 4.dp
     val levelArrowAndExtraPadding = levelPadding + arrowIconAreaSize + paddingBetweenArrowAndIcon
@@ -61,19 +66,17 @@ internal fun CollectionRowItem(
             )
     ) {
         if (!hasChildren) {
-            Spacer(modifier = Modifier.width(levelArrowAndExtraPadding))
+            Spacer(modifier = Modifier.width(if (collection.identifier is CollectionIdentifier.custom) 16.dp else levelArrowAndExtraPadding))
         } else {
             Spacer(modifier = Modifier.width(levelPadding))
-            IconWithPadding(
-                drawableRes = if (isCollapsed) {
+            LibraryIconButton(
+                icon = if (isCollapsed) {
                     Drawables.chevron_right_24px
                 } else {
                     Drawables.expand_more_24px
                 },
-                onClick = { onItemChevronTapped() },
-                areaSize = arrowIconAreaSize,
-                shouldShowRipple = false,
-                tintColor = MaterialTheme.colorScheme.onSurfaceVariant
+                label = stringResource(if (isCollapsed) Strings.library_expand_collection else Strings.library_collapse_collection),
+                onClick = onItemChevronTapped,
             )
             Spacer(modifier = Modifier.width(paddingBetweenArrowAndIcon))
         }
@@ -86,9 +89,9 @@ internal fun CollectionRowItem(
         Spacer(modifier = Modifier.width(paddingBetweenIconAndText))
 
         Text(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).padding(vertical = 12.dp),
             text = collection.name,
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,

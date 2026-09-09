@@ -1,12 +1,10 @@
 package org.zotero.android.screens.allitems
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AppBarMenuState
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.FlexibleBottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +16,7 @@ import org.zotero.android.screens.allitems.data.AllItemsBottomPanelItem
 import org.zotero.android.screens.allitems.data.AllItemsBottomPanelItems
 import org.zotero.android.uicomponents.Drawables
 import org.zotero.android.uicomponents.Strings
+import org.zotero.android.uicomponents.library.LibraryBottomBar
 
 @Composable
 internal fun AllItemsEditingBottomPanel(
@@ -48,7 +47,7 @@ internal fun AllItemsEditingBottomPanel(
         overflowItems = actions.overflowItems
     }
 
-    val maxItemsInPanel = 6
+    val maxItemsInPanel = 5
     val paneItemsToDisplay = panelItems.take(maxItemsInPanel)
     val extraOverflowItems =
         if (panelItems.size > maxItemsInPanel) {
@@ -60,8 +59,7 @@ internal fun AllItemsEditingBottomPanel(
     overflowItems = extraOverflowItems + overflowItems
 
     val menuState = remember { AppBarMenuState() }
-    FlexibleBottomAppBar(
-        horizontalArrangement = Arrangement.SpaceBetween,
+    LibraryBottomBar(
         content = {
             paneItemsToDisplay.forEach {
                 AllItemsBottomPanelAppbarContent(

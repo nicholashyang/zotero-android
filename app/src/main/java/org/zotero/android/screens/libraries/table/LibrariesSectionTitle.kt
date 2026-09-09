@@ -24,7 +24,7 @@ internal fun LibrariesSectionTitle(
             .heightIn(min = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Spacer(modifier = Modifier.width((16 + 28 + 12).dp))
+        Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = stringResource(id = titleId),
             style = MaterialTheme.typography.titleSmall,

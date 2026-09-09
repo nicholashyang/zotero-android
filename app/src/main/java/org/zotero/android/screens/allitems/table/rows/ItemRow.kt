@@ -5,11 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -19,10 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.zotero.android.androidx.content.getDrawableByItemType
 import org.zotero.android.screens.allitems.data.ItemCellModel
 import org.zotero.android.uicomponents.foundation.debounceCombinedClickable
+import org.zotero.android.uicomponents.library.LibraryMetrics
 
 @Composable
 internal fun ItemRow(
@@ -34,18 +37,10 @@ internal fun ItemRow(
     onItemLongTapped: (key: String) -> Unit,
     onAccessoryTapped: (key: String) -> Unit,
 ) {
-    var rowModifier: Modifier = Modifier.height(64.dp)
     val isRowSelected = isItemSelected(cellModel.key)
-    if (isRowSelected) {
-        val roundCornerShape = RoundedCornerShape(8.dp)
-        rowModifier = rowModifier
-            .padding(horizontal = 8.dp,  vertical = 4.dp)
-            .background(
-                color = MaterialTheme.colorScheme.secondaryContainer,
-                shape = roundCornerShape)
-            .clip(roundCornerShape)
-
-    }
+    val rowModifier = Modifier.fillMaxWidth().heightIn(min = 80.dp)
+        .background(if (isRowSelected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface)
+        .semantics { if (isEditing) selected = isRowSelected }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = rowModifier
@@ -55,14 +50,11 @@ internal fun ItemRow(
                 onClick = { onItemTapped(cellModel) },
                 onLongClick = { onItemLongTapped(cellModel.key) }
             )
+            .padding(vertical = 12.dp)
     ) {
-        if (isRowSelected) {
-            Spacer(modifier = Modifier.width(8.dp))
-        } else {
-            Spacer(modifier = Modifier.width(16.dp))
-        }
+        Spacer(modifier = Modifier.width(LibraryMetrics.pageInset))
         Image(
-            modifier = Modifier.size(28.dp),
+            modifier = Modifier.size(24.dp),
             painter = painterResource(id = LocalContext.current.getDrawableByItemType(cellModel.typeIconName)),
             contentDescription = null,
         )
@@ -75,9 +67,7 @@ internal fun ItemRow(
             isItemSelected = isItemSelected,
             onItemTapped = onItemTapped
         )
-        if (!isRowSelected) {
-            Spacer(modifier = Modifier.width(8.dp))
-        }
+        Spacer(modifier = Modifier.width(8.dp))
 
     }
 }

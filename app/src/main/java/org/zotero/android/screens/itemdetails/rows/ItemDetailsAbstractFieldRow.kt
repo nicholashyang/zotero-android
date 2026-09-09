@@ -16,7 +16,7 @@ import org.zotero.android.uicomponents.Strings
 internal fun ItemDetailsAbstractFieldRow(
     detailValue: String,
 ) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+    Column(modifier = Modifier.padding(16.dp)) {
         ItemDetailHeaderSection(Strings.abstract_1)
         Spacer(modifier = Modifier.height(8.dp))
         Text(

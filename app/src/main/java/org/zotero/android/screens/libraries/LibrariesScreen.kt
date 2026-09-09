@@ -13,12 +13,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import org.zotero.android.architecture.ui.CustomLayoutSize
 import org.zotero.android.screens.libraries.table.LibrariesTable
-import org.zotero.android.uicomponents.CustomScaffoldM3
 import org.zotero.android.uicomponents.Strings
-import org.zotero.android.uicomponents.error.FullScreenError
+import org.zotero.android.uicomponents.library.LibraryErrorState
+import org.zotero.android.uicomponents.library.LibraryScaffold
 import org.zotero.android.uicomponents.loading.BaseLceBox
 import org.zotero.android.uicomponents.loading.CircularLoading
-import org.zotero.android.uicomponents.themem3.AppThemeM3
 
 @Composable
 internal fun LibrariesScreen(
@@ -27,59 +26,57 @@ internal fun LibrariesScreen(
     onSettingsTapped: () -> Unit,
     onExitApp:() -> Unit,
 ) {
-    AppThemeM3 {
-        val layoutType = CustomLayoutSize.calculateLayoutType()
-        val viewState by viewModel.viewStates.observeAsState(LibrariesViewState())
-        val viewEffect by viewModel.viewEffects.observeAsState()
+    val layoutType = CustomLayoutSize.calculateLayoutType()
+    val viewState by viewModel.viewStates.observeAsState(LibrariesViewState())
+    val viewEffect by viewModel.viewEffects.observeAsState()
 
-        BackHandler(
-            enabled = viewState.backHandlerEnabled,
-            onBack = {
-                onExitApp()
-            })
+    BackHandler(
+        enabled = viewState.backHandlerEnabled,
+        onBack = {
+            onExitApp()
+        })
 
-        LaunchedEffect(key1 = viewModel) {
-            viewModel.init(isTablet = layoutType.isTablet())
+    LaunchedEffect(key1 = viewModel) {
+        viewModel.init(isTablet = layoutType.isTablet())
+    }
+
+    LaunchedEffect(key1 = viewEffect) {
+        val consumedEffect = viewEffect?.consume()
+        when (consumedEffect) {
+            null -> Unit
+            is LibrariesViewEffect.NavigateToCollectionsScreen -> navigateToCollectionsScreen(
+                consumedEffect.screenArgs
+            )
         }
+    }
 
-        LaunchedEffect(key1 = viewEffect) {
-            val consumedEffect = viewEffect?.consume()
-            when (consumedEffect) {
-                null -> Unit
-                is LibrariesViewEffect.NavigateToCollectionsScreen -> navigateToCollectionsScreen(
-                    consumedEffect.screenArgs
-                )
-            }
-        }
-
-        val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-        CustomScaffoldM3(
-            scrollBehavior = scrollBehavior,
-            topBar = {
-                LibrariesTopBar(
-                    scrollBehavior = scrollBehavior,
-                    onSettingsTapped = onSettingsTapped,
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    LibraryScaffold(
+        scrollBehavior = scrollBehavior,
+        topBar = {
+            LibrariesTopBar(
+                scrollBehavior = scrollBehavior,
+                onSettingsTapped = onSettingsTapped,
+            )
+        },
+    ) {
+        BaseLceBox(
+            modifier = Modifier.fillMaxSize(),
+            lce = viewState.lce,
+            error = { _ ->
+                LibraryErrorState(
+                    modifier = Modifier.align(Alignment.Center),
+                    errorTitle = stringResource(id = Strings.error_list_load_check_crash_logs),
                 )
             },
+            loading = {
+                CircularLoading()
+            },
         ) {
-            BaseLceBox(
-                modifier = Modifier.fillMaxSize(),
-                lce = viewState.lce,
-                error = { _ ->
-                    FullScreenError(
-                        modifier = Modifier.align(Alignment.Center),
-                        errorTitle = stringResource(id = Strings.error_list_load_check_crash_logs),
-                    )
-                },
-                loading = {
-                    CircularLoading()
-                },
-            ) {
-                LibrariesTable(
-                    viewState = viewState,
-                    viewModel = viewModel,
-                )
-            }
+            LibrariesTable(
+                viewState = viewState,
+                viewModel = viewModel,
+            )
         }
     }
 }

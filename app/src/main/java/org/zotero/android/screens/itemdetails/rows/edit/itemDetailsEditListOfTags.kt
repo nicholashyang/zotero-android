@@ -5,11 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,61 +25,62 @@ import org.zotero.android.screens.itemdetails.AddItemRow
 import org.zotero.android.screens.itemdetails.ItemDetailHeaderSection
 import org.zotero.android.screens.itemdetails.ItemDetailsViewModel
 import org.zotero.android.screens.itemdetails.ItemDetailsViewState
-import org.zotero.android.screens.settings.elements.NewSettingsDivider
 import org.zotero.android.uicomponents.Drawables
 import org.zotero.android.uicomponents.Strings
 import org.zotero.android.uicomponents.foundation.debounceCombinedClickable
+import org.zotero.android.uicomponents.library.LibraryGroupItem
 
 internal fun LazyListScope.itemDetailsEditListOfTags(
     viewState: ItemDetailsViewState,
     viewModel: ItemDetailsViewModel,
 ) {
     item {
-        NewSettingsDivider()
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 8.dp)) {
             ItemDetailHeaderSection(Strings.item_detail_tags)
         }
     }
-    items(
-        viewState.tags
-    ) { item ->
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .debounceCombinedClickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = ripple(),
-                    onClick = {},
-                    onLongClick = { viewModel.onTagLongClick(item) }
-                )
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(Drawables.tag),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
+    itemsIndexed(viewState.tags) { index, item ->
+        LibraryGroupItem(first = index == 0, last = false) {
+            Row(
                 modifier = Modifier
-                    .weight(1f),
-                text = HtmlCompat.fromHtml(
-                    item.name,
-                    HtmlCompat.FROM_HTML_MODE_LEGACY
-                ).toString(),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+                    .fillMaxWidth()
+                    .heightIn(min = 56.dp)
+                    .debounceCombinedClickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = ripple(),
+                        onClick = {},
+                        onLongClick = { viewModel.onTagLongClick(item) }
+                    )
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(Drawables.tag),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    modifier = Modifier
+                        .weight(1f),
+                    text = HtmlCompat.fromHtml(
+                        item.name,
+                        HtmlCompat.FROM_HTML_MODE_LEGACY
+                    ).toString(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
     item {
-        AddItemRow(
-            titleRes = Strings.item_detail_add_tag,
-            onClick = viewModel::onAddTag
-        )
+        LibraryGroupItem(first = viewState.tags.isEmpty(), last = true) {
+            AddItemRow(
+                titleRes = Strings.item_detail_add_tag,
+                onClick = viewModel::onAddTag
+            )
+        }
     }
 }

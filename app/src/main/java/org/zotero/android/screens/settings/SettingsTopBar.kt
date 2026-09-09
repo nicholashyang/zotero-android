@@ -1,39 +1,18 @@
 package org.zotero.android.screens.settings
 
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import org.zotero.android.uicomponents.Drawables
+import org.zotero.android.architecture.ui.CustomLayoutSize
 import org.zotero.android.uicomponents.Strings
+import org.zotero.android.uicomponents.library.LibraryNavigationBar
 
 @Composable
-internal fun SettingsTopBar(
-    onClose: () -> Unit,
-) {
-    TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
-        title = { Text(
-            text = stringResource(Strings.settings_title),
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.titleLarge
-        )},
-        navigationIcon = {
-            IconButton(onClick = onClose) {
-                Icon(
-                    painter = painterResource(Drawables.arrow_back_24dp),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
-            }
-        },
+internal fun SettingsTopBar(onClose: () -> Unit, scrollBehavior: TopAppBarScrollBehavior? = null) {
+    LibraryNavigationBar(
+        title = stringResource(Strings.settings_title),
+        largeTitle = !CustomLayoutSize.calculateLayoutType().isTablet(),
+        onBack = onClose,
+        scrollBehavior = scrollBehavior,
     )
 }

@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -28,13 +28,13 @@ import org.zotero.android.screens.itemdetails.ItemDetailHeaderSection
 import org.zotero.android.screens.itemdetails.ItemDetailsViewModel
 import org.zotero.android.screens.itemdetails.ItemDetailsViewState
 import org.zotero.android.screens.itemdetails.data.ItemDetailAttachmentKind
-import org.zotero.android.screens.settings.elements.NewSettingsDivider
 import org.zotero.android.uicomponents.Drawables
 import org.zotero.android.uicomponents.Strings
 import org.zotero.android.uicomponents.attachmentprogress.FileAttachmentView
 import org.zotero.android.uicomponents.attachmentprogress.State
 import org.zotero.android.uicomponents.attachmentprogress.Style
 import org.zotero.android.uicomponents.foundation.debounceCombinedClickable
+import org.zotero.android.uicomponents.library.LibraryGroupItem
 
 internal fun LazyListScope.itemDetailsListOfAttachments(
     viewState: ItemDetailsViewState,
@@ -42,97 +42,100 @@ internal fun LazyListScope.itemDetailsListOfAttachments(
 ) {
 
     item {
-        NewSettingsDivider()
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 8.dp)) {
             ItemDetailHeaderSection(Strings.item_detail_attachments)
         }
     }
-    items(
-        items = viewState.attachments
-    ) { item ->
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 48.dp)
-                .debounceCombinedClickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = ripple(),
-                    onClick = { viewModel.openAttachment(item) },
-                    onLongClick = { viewModel.onAttachmentLongClick(item) },
-                ).padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            val iconSize = 28.dp
-            val mainIconSize = 22.dp
-            val badgeIconSize = 12.dp
+    itemsIndexed(
+        items = viewState.attachments, key = { _, item -> item.key }
+    ) { index, item ->
+        LibraryGroupItem(first = index == 0, last = index == viewState.attachments.lastIndex && viewState.data.isAttachment) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp)
+                    .debounceCombinedClickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = ripple(),
+                        onClick = { viewModel.openAttachment(item) },
+                        onLongClick = { viewModel.onAttachmentLongClick(item) },
+                    ).padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val iconSize = 28.dp
+                val mainIconSize = 22.dp
+                val badgeIconSize = 12.dp
 
-            val type = viewModel.calculateAttachmentKind(attachment = item)
-            val modifier = Modifier.size(iconSize)
-            when (item.type) {
-                is Attachment.Kind.file -> {
-                    when (type) {
-                        ItemDetailAttachmentKind.default, ItemDetailAttachmentKind.disabled -> {
-                            FileAttachmentView(
-                                modifier = modifier,
-                                state = State.ready(item.type),
-                                style = Style.detail,
-                                mainIconSize = mainIconSize,
-                                badgeIconSize = badgeIconSize,
-                            )
-                        }
+                val type = viewModel.calculateAttachmentKind(attachment = item)
+                val modifier = Modifier.size(iconSize)
+                when (item.type) {
+                    is Attachment.Kind.file -> {
+                        when (type) {
+                            ItemDetailAttachmentKind.default, ItemDetailAttachmentKind.disabled -> {
+                                FileAttachmentView(
+                                    modifier = modifier,
+                                    state = State.ready(item.type),
+                                    style = Style.detail,
+                                    mainIconSize = mainIconSize,
+                                    badgeIconSize = badgeIconSize,
+                                )
+                            }
 
-                        is ItemDetailAttachmentKind.inProgress -> {
-                            FileAttachmentView(
-                                modifier = modifier,
-                                state = State.progress(type.progressInHundreds),
-                                style = Style.detail,
-                                mainIconSize = mainIconSize,
-                                badgeIconSize = badgeIconSize,
-                            )
-                        }
+                            is ItemDetailAttachmentKind.inProgress -> {
+                                FileAttachmentView(
+                                    modifier = modifier,
+                                    state = State.progress(type.progressInHundreds),
+                                    style = Style.detail,
+                                    mainIconSize = mainIconSize,
+                                    badgeIconSize = badgeIconSize,
+                                )
+                            }
 
-                        is ItemDetailAttachmentKind.failed -> {
-                            FileAttachmentView(
-                                modifier = modifier,
-                                state = State.failed(item.type, type.error),
-                                style = Style.detail,
-                                mainIconSize = mainIconSize,
-                                badgeIconSize = badgeIconSize,
-                            )
+                            is ItemDetailAttachmentKind.failed -> {
+                                FileAttachmentView(
+                                    modifier = modifier,
+                                    state = State.failed(item.type, type.error),
+                                    style = Style.detail,
+                                    mainIconSize = mainIconSize,
+                                    badgeIconSize = badgeIconSize,
+                                )
+                            }
                         }
                     }
-                }
 
-                is Attachment.Kind.url -> {
-                    Image(
-                        modifier = modifier,
-                        painter = painterResource(id = Drawables.web_page),
-                        contentDescription = null,
-                    )
+                    is Attachment.Kind.url -> {
+                        Image(
+                            modifier = modifier,
+                            painter = painterResource(id = Drawables.web_page),
+                            contentDescription = null,
+                        )
+                    }
                 }
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    modifier = Modifier
+                        .weight(1f),
+                    text = HtmlCompat.fromHtml(
+                        item.title,
+                        HtmlCompat.FROM_HTML_MODE_LEGACY
+                    ).toString(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                modifier = Modifier
-                    .weight(1f),
-                text = HtmlCompat.fromHtml(
-                    item.title,
-                    HtmlCompat.FROM_HTML_MODE_LEGACY
-                ).toString(),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
 
+        }
     }
     if (!viewState.data.isAttachment) {
         item {
-            AddItemRow(
-                titleRes = Strings.item_detail_add_attachment,
-                onClick = viewModel::onAddAttachment
-            )
+            LibraryGroupItem(first = viewState.attachments.isEmpty(), last = true) {
+                AddItemRow(
+                    titleRes = Strings.item_detail_add_attachment,
+                    onClick = viewModel::onAddAttachment
+                )
+            }
         }
     }
 
