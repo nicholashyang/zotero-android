@@ -19,6 +19,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
@@ -39,10 +41,8 @@ import org.zotero.android.architecture.navigation.toolbar.SyncToolbarScreen
 import org.zotero.android.architecture.ui.CustomLayoutSize
 import org.zotero.android.files.FileStore
 import org.zotero.android.ktx.enableEdgeToEdgeAndTranslucency
-import org.zotero.android.uicomponents.themem3.AppThemeM3
+import org.zotero.android.uicomponents.library.LibraryTheme
 import timber.log.Timber
-import java.io.File
-import javax.inject.Inject
 
 @AndroidEntryPoint
 internal class DashboardActivity : BaseActivity() {
@@ -146,7 +146,7 @@ internal class DashboardActivity : BaseActivity() {
             val collectionDefaultValue = viewModel.getInitialCollectionArgs()
 
             setContent {
-                AppThemeM3 {
+                LibraryTheme {
                     Box {
                         val viewState by viewModel.viewStates.observeAsState(DashboardViewState())
                         val viewEffect by viewModel.viewEffects.observeAsState()
@@ -241,4 +241,3 @@ internal class DashboardActivity : BaseActivity() {
         }
     }
 }
-
