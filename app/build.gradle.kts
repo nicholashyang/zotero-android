@@ -36,7 +36,8 @@ android {
         targetSdk = BuildConfig.targetSdk
         versionCode = BuildConfig.versionCode
         versionName = BuildConfig.version.name
-        testInstrumentationRunner = Libs.androidJUnitRunner
+        testInstrumentationRunner = providers.gradleProperty("uiTestRunner")
+            .getOrElse(Libs.androidJUnitRunner)
 
         buildConfigField("String", "BASE_API_URL", "\"https://api.zotero.org\"")
         buildConfigField("boolean", "EVENT_AND_CRASH_LOGGING_ENABLED", "false")
@@ -178,6 +179,12 @@ dependencies {
     implementation(Libs.keyboardVisibility)
     implementation(Libs.codeScanner)
 
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.11.4")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.11.4")
+    // Android tests share the tested app's resolved runtime versions. Compose
+    // testing / androidx.test 1.3 require this version instead of Realm's 1.1.0.
+    implementation("androidx.concurrent:concurrent-futures:1.2.0")
+
 }
 
 kapt {
@@ -186,6 +193,26 @@ kapt {
 
 hilt {
     enableAggregatingTask = false
+}
+
+// A local dev build has crash reporting disabled and does not need Zotero's
+// Firebase configuration. Leave every release task/configuration intact.
+val hasDevGoogleServices = listOf(
+    "google-services.json",
+    "src/dev/google-services.json",
+    "src/debug/google-services.json",
+    "src/devDebug/google-services.json",
+    "src/dev/debug/google-services.json",
+    "src/debug/dev/google-services.json",
+).any { file(it).isFile }
+
+if (!hasDevGoogleServices) {
+    tasks.configureEach {
+        if (name == "processDevDebugGoogleServices" ||
+            (name.contains("DevDebug") && name.contains("Crashlytics"))) {
+            enabled = false
+        }
+    }
 }
 
 fun readPspdfkitKey() : String {

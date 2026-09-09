@@ -1,0 +1,44 @@
+name: Development checks
+
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+    branches: ['codex/**']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dev-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.10'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Prepare reader, translators and citation assets
+        run: bash scripts/prepare_dev_assets.sh
+      - name: Build and check development variant
+        run: bash gradlew --no-configuration-cache --max-workers=1 :app:assembleDevDebug :app:testDevDebugUnitTest :app:lintDevDebug
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dev-debug-results
+          path: |
+            app/build/outputs/apk/dev/debug/*.apk
+            app/build/reports/
+          if-no-files-found: warn
