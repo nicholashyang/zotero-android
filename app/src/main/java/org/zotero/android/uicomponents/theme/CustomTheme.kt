@@ -59,22 +59,5 @@ fun CustomThemeWithStatusAndNavBars(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val customTypography = CustomTypography()
-    val customColors = createSemanticColors(
-        dynamicThemeColors = dynamicThemeColors,
-        isDarkTheme = isDarkTheme
-    )
-
-    CompositionLocalProvider(
-        LocalCustomTypography provides customTypography,
-        LocalTextStyle provides customTypography.default,
-        LocalCustomColors provides customColors,
-        LocalContentColor provides customColors.primaryContent,
-        LocalRippleConfiguration provides CustomRippleTheme.createCustomRippleTheme(),
-        LocalCustomShapes provides CustomShapes(),
-        LocalUriHandler provides CustomUriHandler(LocalContext.current),
-    ) {
-        content()
-    }
-
+    CustomTheme(dynamicThemeColors = dynamicThemeColors, isDarkTheme = isDarkTheme, content = content)
 }
