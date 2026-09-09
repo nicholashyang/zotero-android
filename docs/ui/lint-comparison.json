@@ -1,0 +1,52 @@
+{
+  "baselineRevision": "b5b71acd02f8771218321099b84c3c56dc00b190",
+  "baseline": {
+    "Warning": 695,
+    "Fatal": 1,
+    "Error": 571
+  },
+  "current": {
+    "Warning": 690,
+    "Fatal": 1,
+    "Error": 571
+  },
+  "added": [],
+  "removed": [
+    {
+      "id": "UnusedResources",
+      "severity": "Warning",
+      "file": "app/src/main/res/values/imported_strings.xml",
+      "message": "The resource `R.string.accessibility_collections_collapse` appears to be unused",
+      "count": 1
+    },
+    {
+      "id": "UnusedResources",
+      "severity": "Warning",
+      "file": "app/src/main/res/values/imported_strings.xml",
+      "message": "The resource `R.string.accessibility_collections_expand` appears to be unused",
+      "count": 1
+    },
+    {
+      "id": "UnusedResources",
+      "severity": "Warning",
+      "file": "app/src/main/res/values/imported_strings.xml",
+      "message": "The resource `R.string.back` appears to be unused",
+      "count": 1
+    },
+    {
+      "id": "UnusedResources",
+      "severity": "Warning",
+      "file": "app/src/main/res/values/imported_strings.xml",
+      "message": "The resource `R.string.item_detail_notes` appears to be unused",
+      "count": 1
+    },
+    {
+      "id": "UnusedResources",
+      "severity": "Warning",
+      "file": "app/src/main/res/values/imported_strings.xml",
+      "message": "The resource `R.string.select` appears to be unused",
+      "count": 1
+    }
+  ],
+  "comparison": "Issue ID, severity, repository-relative file and message; source line numbers ignored."
+}

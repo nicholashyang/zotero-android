@@ -2,7 +2,7 @@ package org.zotero.android.screens.itemdetails.rows
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,7 +20,7 @@ internal fun ItemDetailsItemType(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .heightIn(min = 48.dp)
             .padding(horizontal = 16.dp)
         , verticalAlignment = Alignment.CenterVertically
     ) {

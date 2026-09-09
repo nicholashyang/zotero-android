@@ -1,0 +1,6 @@
+
+org.zotero.android.library.LibraryScreenshotTest:.....
+
+Time: 10.793
+
+OK (5 tests)

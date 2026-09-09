@@ -1,0 +1,8 @@
+Stopping: org.zotero.android.debug
+Starting: Intent { cmp=org.zotero.android.debug/org.zotero.android.screens.root.RootActivity }
+Status: ok
+LaunchState: COLD
+Activity: org.zotero.android.debug/org.zotero.android.screens.onboarding.OnboardingActivity
+TotalTime: 1482
+WaitTime: 1486
+Complete

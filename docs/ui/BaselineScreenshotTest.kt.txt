@@ -1,0 +1,155 @@
+package org.zotero.android.library
+
+import android.graphics.Bitmap
+import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.*
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import org.zotero.android.screens.allitems.data.ItemCellModel
+import org.zotero.android.screens.allitems.table.AllItemsTable
+import org.zotero.android.screens.collections.CollectionsTopBar
+import org.zotero.android.screens.collections.rows.CollectionRowItem
+import org.zotero.android.screens.itemdetails.rows.ItemDetailsFieldRow
+import org.zotero.android.screens.itemdetails.rows.ItemDetailsAbstractFieldRow
+import org.zotero.android.screens.itemdetails.topbars.ItemDetailsTopBar
+import org.zotero.android.architecture.ui.CustomLayoutSize
+import org.zotero.android.sync.Collection
+import org.zotero.android.sync.CollectionIdentifier
+import org.zotero.android.uicomponents.Drawables
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.dp
+import java.io.File
+import org.junit.Rule
+import org.junit.Test
+import org.zotero.android.screens.dashboard.BuildInfo
+import org.zotero.android.screens.libraries.LibrariesTopBar
+import org.zotero.android.screens.libraries.data.LibraryRowData
+import org.zotero.android.screens.libraries.data.LibraryState
+import org.zotero.android.screens.libraries.table.LibrariesItem
+import org.zotero.android.screens.libraries.table.LibrariesSectionTitle
+import org.zotero.android.screens.settings.SettingsTopBar
+import org.zotero.android.screens.settings.elements.NewSettingsDivider
+import org.zotero.android.screens.settings.elements.NewSettingsItem
+import org.zotero.android.uicomponents.CustomScaffoldM3
+import org.zotero.android.uicomponents.Strings
+import org.zotero.android.uicomponents.themem3.AppThemeM3
+
+/** Run only against baseline b5b71ac. Uses original rows, headers and grouping. */
+class BaselineScreenshotTest {
+    @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
+    private fun capture(name: String, content: @Composable () -> Unit) {
+        compose.setContent { AppThemeM3 { content() } }
+        compose.waitForIdle()
+        val file = File(compose.activity.filesDir, "ui-screenshots/$name.png")
+        file.parentFile!!.mkdirs()
+        file.outputStream().use { compose.onRoot().captureToImage().asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, it) }
+    }
+    @Test fun librariesLight() = capture("libraries-light") {
+        CustomScaffoldM3(topBar = { LibrariesTopBar(TopAppBarDefaults.pinnedScrollBehavior(), {}) }) {
+            LazyColumn {
+                item { LibrariesItem(LibraryRowData(1, "My Library", LibraryState.normal), {}, {}) }
+                item { LibrariesSectionTitle(Strings.libraries_group_libraries) }
+                item { LibrariesItem(LibraryRowData(2, "Research Lab", LibraryState.normal), {}, {}) }
+                item { LibrariesItem(LibraryRowData(3, "Reading Group", LibraryState.locked), {}, {}) }
+            }
+        }
+    }
+    @Test fun settingsLight() = capture("settings-light") {
+        CustomScaffoldM3(topBar = { SettingsTopBar({}) }) {
+            Column(Modifier.fillMaxSize()) {
+                Spacer(Modifier.height(4.dp))
+                NewSettingsItem(stringResource(Strings.settings_sync_account), onItemTapped = {})
+                NewSettingsDivider()
+                NewSettingsItem(stringResource(Strings.settings_export_title), onItemTapped = {})
+                NewSettingsItem(stringResource(Strings.settings_cite_title), onItemTapped = {})
+                NewSettingsItem(stringResource(Strings.settings_debug), onItemTapped = {})
+                NewSettingsDivider()
+                NewSettingsItem(stringResource(Strings.support_feedback), onItemTapped = {})
+                NewSettingsItem(stringResource(Strings.privacy_policy), onItemTapped = {})
+                NewSettingsDivider()
+                BuildInfo()
+            }
+        }
+    }
+    @Test fun itemsLight() = capture("items-light") {
+        CustomScaffoldM3(
+            topBar = {
+                // The initial, non-search state of the original phone header.
+                TopAppBar(
+                    title = { Text("All Items", style = MaterialTheme.typography.titleLarge) },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
+                    navigationIcon = { IconButton({}) { Icon(painterResource(Drawables.arrow_back_24dp), null) } },
+                    actions = { IconButton({}) { Icon(painterResource(Drawables.search_24px), null, tint = MaterialTheme.colorScheme.onSurfaceVariant) } },
+                )
+            },
+            bottomBar = {
+                FlexibleBottomAppBar(horizontalArrangement = Arrangement.SpaceBetween) {
+                    IconButton({}) { Icon(painterResource(Drawables.filter_list_off_24px), null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }
+                    FilledIconButton({}, modifier = Modifier.width(52.dp), colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
+                        Icon(painterResource(Drawables.add_24px), null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                    }
+                    IconButton({}) { Icon(painterResource(Drawables.swap_vert_24px), null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }
+                }
+            },
+        ) {
+            AllItemsTable(rememberLazyListState(), remember { mutableStateListOf(*Array(12) { sampleItem(it) }) }, { false }, { ItemCellModel.Accessory.doi }, false, false, {}, {}, {}, {})
+        }
+    }
+    @Test fun collectionsLight() = capture("collections-light") {
+        CustomScaffoldM3(topBar = { CollectionsTopBar("My Library", TopAppBarDefaults.pinnedScrollBehavior(), {}, {}) }) {
+            Column {
+                CollectionExample(Collection.initWithCustomType(CollectionIdentifier.CustomType.all, 128))
+                CollectionExample(Collection.initWithCustomType(CollectionIdentifier.CustomType.recentlyRead, 12))
+                CollectionExample(Collection(CollectionIdentifier.collection("ml"), "Machine Learning", 42), true)
+                CollectionExample(Collection(CollectionIdentifier.collection("reading"), "待读文献 · Reading list", 18))
+                CollectionExample(Collection.initWithCustomType(CollectionIdentifier.CustomType.unfiled, 7))
+                CollectionExample(Collection.initWithCustomType(CollectionIdentifier.CustomType.trash, 2))
+            }
+        }
+    }
+    @Test fun detailsLight() = capture("details-light") {
+        CustomScaffoldM3(topBar = { ItemDetailsTopBar({}, {}, TopAppBarDefaults.pinnedScrollBehavior()) }) {
+            LazyColumn {
+                item { Text(sampleItem().title, Modifier.padding(horizontal = 16.dp), style = MaterialTheme.typography.headlineSmall); NewSettingsDivider() }
+                item {
+                    Column(Modifier.padding(horizontal = 16.dp)) {
+                        ItemDetailsFieldRow("Item Type", "Journal Article")
+                        ItemDetailsFieldRow("Author", "Ashish Vaswani")
+                        ItemDetailsFieldRow("Date", "2017")
+                        ItemDetailsFieldRow("Publication", "Advances in Neural Information Processing Systems")
+                    }
+                    NewSettingsDivider()
+                    ItemDetailsAbstractFieldRow("A reading note about attention, sequence modelling, and how we organize research literature.\n\n把文献信息与阅读笔记放在一起，便于回顾和整理。")
+                }
+            }
+        }
+    }
+
+}
+
+@Composable
+private fun CollectionExample(collection: Collection, children: Boolean = false) {
+    CollectionRowItem(CustomLayoutSize.LayoutType.small, 4.dp, collection, CollectionIdentifier.custom(CollectionIdentifier.CustomType.all), true, children, true, {}, {}, {})
+}
+
+internal fun sampleItem(index: Int = 0) = ItemCellModel(
+    key = "fixture-$index",
+    typeIconName = "item_type_journalarticle",
+    typeName = "Journal Article",
+    title = if (index == 0) "Attention Is All You Need: Understanding Attention in Scientific Literature" else "研究文献 $index · Reading and organizing scientific papers",
+    subtitle = "Vaswani et al. · 2017",
+    hasNote = true,
+    accessory = ItemCellModel.Accessory.doi,
+    tagColors = mutableStateListOf(Color(0xFF3877B8), Color(0xFFD6A847)),
+)

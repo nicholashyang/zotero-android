@@ -1,0 +1,5 @@
+> Task :app:injectCrashlyticsMappingFileIdDevDebug SKIPPED
+> Task :app:injectCrashlyticsVersionControlInfoDevDebug SKIPPED
+> Task :app:processDevDebugGoogleServices SKIPPED
+> Task :app:assembleDevDebug
+BUILD SUCCESSFUL in 2m 41s

@@ -32,7 +32,7 @@ internal fun ItemDetailsFieldRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 32.dp)
+            .heightIn(min = if (onRowTapped != null) 48.dp else 32.dp)
             .safeClickable(
                 onClick = onRowTapped,
                 interactionSource = remember { MutableInteractionSource() },
@@ -45,7 +45,7 @@ internal fun ItemDetailsFieldRow(
                 modifier = Modifier.align(Alignment.End),
                 text = detailTitle,
                 overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
+                maxLines = 2,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyLarge,
             )
@@ -69,5 +69,4 @@ internal fun ItemDetailsFieldRow(
         }
     }
 }
-
 

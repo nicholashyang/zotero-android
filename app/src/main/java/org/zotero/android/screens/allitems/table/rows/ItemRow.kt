@@ -56,7 +56,7 @@ internal fun ItemRow(
         Image(
             modifier = Modifier.size(24.dp),
             painter = painterResource(id = LocalContext.current.getDrawableByItemType(cellModel.typeIconName)),
-            contentDescription = null,
+            contentDescription = cellModel.typeName,
         )
         Spacer(modifier = Modifier.width(12.dp))
         ItemRowCentralPart(

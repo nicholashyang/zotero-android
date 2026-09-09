@@ -51,8 +51,10 @@ while sequential runs completed.
 
 Use an empty emulator. These tests install the development package and substitute
 a plain `Application` only in the instrumentation process. They do not log in,
-open the user's database, start sync or initialize the PDF SDK. The normal app
-entry point still uses `ZoteroApplication`.
+open the user's database or start sync. The normal app entry point still uses
+`ZoteroApplication`. The separate `NutrientTrialSmokeTest` initializes the SDK with
+a null key and parses the included original one-page PDF; it does not certify
+reader interactions, annotations, exports or release licensing.
 
 ```sh
 bash gradlew --no-configuration-cache --max-workers=1 \
@@ -70,6 +72,12 @@ The helper builds and installs both APKs, runs the fixture tests and exports
 Compose-root PNGs. Gradle's connected-test cleanup may uninstall the app, so the
 helper uses `am instrument` for capture. Images are production-component fixtures,
 not screenshots of an authenticated library. See [UI validation](ui/README.md).
+
+The screenshot runner also accepts `-e captureFontScale 2` or
+`-e captureDark true` with `adb shell am instrument` to exercise all five core
+fixtures in a common display mode. These overrides apply only to test content.
+The helper runs the two UI classes; Gradle's full connected suite additionally
+runs the PDF smoke test.
 
 ## Development CI
 

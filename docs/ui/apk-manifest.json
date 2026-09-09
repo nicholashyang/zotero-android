@@ -1,0 +1,9 @@
+{
+  "variant": "devDebug",
+  "applicationId": "org.zotero.android.debug",
+  "versionName": "1.0.0-280",
+  "versionCode": 280,
+  "bytes": 190795550,
+  "sha256": "29c4a490fe5d1dfa0c4938aae56d78d0b0d6172b62be38ab645440438bde7054",
+  "file": "artifacts/Zotero-iOS-inspired-dev-debug.apk"
+}

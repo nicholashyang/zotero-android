@@ -5,6 +5,4 @@
     <string name="library_empty_message">Add a reference or pull down to sync your library.</string>
     <string name="library_search_empty_title">No matching items</string>
     <string name="library_search_empty_message">Try another search or adjust your filters.</string>
-    <string name="library_expand_collection">Expand collection</string>
-    <string name="library_collapse_collection">Collapse collection</string>
 </resources>

@@ -1,0 +1,2 @@
+# Preserve byte offsets and cross-reference records in instrumentation PDF fixtures.
+app/src/androidTest/assets/*.pdf binary

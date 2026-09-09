@@ -1,0 +1,7 @@
+> Task :app:injectCrashlyticsMappingFileIdDevDebug
+> Task :app:injectCrashlyticsVersionControlInfoDevDebug
+> Task :app:processDevDebugGoogleServices
+> Task :app:assembleDevDebug
+> Task :app:assembleDevDebugAndroidTest
+> Task :app:lintDevDebug
+BUILD SUCCESSFUL in 13m 41s

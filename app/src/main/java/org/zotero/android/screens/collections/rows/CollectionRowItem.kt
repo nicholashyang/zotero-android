@@ -75,7 +75,7 @@ internal fun CollectionRowItem(
                 } else {
                     Drawables.expand_more_24px
                 },
-                label = stringResource(if (isCollapsed) Strings.library_expand_collection else Strings.library_collapse_collection),
+                label = stringResource(if (isCollapsed) Strings.accessibility_collections_expand else Strings.accessibility_collections_collapse),
                 onClick = onItemChevronTapped,
             )
             Spacer(modifier = Modifier.width(paddingBetweenArrowAndIcon))

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +45,7 @@ internal fun RowScope.ItemRowSetAccessory(
                     modifier = Modifier.size(16.dp),
                     painter = painterResource(Drawables.list_link),
                     contentDescription = null,
-                    tint = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 

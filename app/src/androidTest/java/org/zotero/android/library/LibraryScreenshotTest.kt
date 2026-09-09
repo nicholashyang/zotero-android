@@ -31,6 +31,7 @@ import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import java.io.File
 import org.junit.Rule
 import org.junit.Test
@@ -51,7 +52,10 @@ import org.zotero.android.screens.settings.SettingsContent
 import org.zotero.android.screens.settings.SettingsTopBar
 import org.zotero.android.sync.Collection
 import org.zotero.android.sync.CollectionIdentifier
+import org.zotero.android.uicomponents.attachmentprogress.State
+import org.zotero.android.uicomponents.loading.CircularLoading
 import org.zotero.android.uicomponents.library.LibraryDivider
+import org.zotero.android.uicomponents.library.LibraryErrorState
 import org.zotero.android.uicomponents.library.LibraryGroup
 import org.zotero.android.uicomponents.library.LibraryScaffold
 import org.zotero.android.uicomponents.library.LibraryTheme
@@ -62,10 +66,13 @@ class LibraryScreenshotTest {
     @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
 
     private fun capture(name: String, dark: Boolean = false, fontScale: Float = 1f, content: @Composable () -> Unit) {
+        val arguments = InstrumentationRegistry.getArguments()
+        val captureFontScale = arguments.getString("captureFontScale")?.toFloatOrNull() ?: fontScale
+        val captureDark = arguments.getString("captureDark")?.toBooleanStrictOrNull() ?: dark
         compose.setContent {
             val density = LocalDensity.current.density
-            CompositionLocalProvider(LocalDensity provides Density(density, fontScale)) {
-                LibraryTheme(darkTheme = dark, content = content)
+            CompositionLocalProvider(LocalDensity provides Density(density, captureFontScale)) {
+                LibraryTheme(darkTheme = captureDark, content = content)
             }
         }
         compose.waitForIdle()
