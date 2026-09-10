@@ -39,16 +39,20 @@ install_apk "$test_apk"
   -e class org.zotero.android.library.AppUpdateTest,org.zotero.android.library.LibraryInteractionTest,org.zotero.android.library.LibraryScreenshotTest \
   org.zotero.android.debug.test/org.zotero.android.library.LibraryTestRunner | tee device-results/instrumentation.txt
 grep -qE '^OK \([0-9]+ tests?\)' device-results/instrumentation.txt
-"$adb_bin" -s "$serial" shell dumpsys package org.zotero.android.debug > device-results/package.txt
-echo 'Exporting verified UI captures'
-"$adb_bin" -s "$serial" exec-out run-as org.zotero.android.debug tar -cf - -C files/ui-screenshots . > device-results/screenshots.tar
-
-# Exercise the real system download queue while no transfer can leave the emulator.
-# Legacy system images require root for the network-control shell helpers. The app
-# and installer tests above run unprivileged; this only controls the isolated emulator.
+# Root is limited to test orchestration on this isolated emulator. Instrumentation
+# still runs as the application UID, including the offline recovery tests below.
 "$adb_bin" -s "$serial" root
 "$adb_bin" -s "$serial" wait-for-device
 test "$("$adb_bin" -s "$serial" shell id -u | tr -d '\r')" = 0
+"$adb_bin" -s "$serial" shell dumpsys package org.zotero.android.debug > device-results/package.txt
+echo 'Exporting verified UI captures'
+"$adb_bin" -s "$serial" shell tar -cf /data/local/tmp/zotero-update-screenshots.tar \
+  -C /data/data/org.zotero.android.debug/files/ui-screenshots .
+"$adb_bin" -s "$serial" pull /data/local/tmp/zotero-update-screenshots.tar device-results/screenshots.tar
+tar -tf device-results/screenshots.tar > device-results/screenshot-files.txt
+"$adb_bin" -s "$serial" shell rm -f /data/local/tmp/zotero-update-screenshots.tar
+
+# Exercise the real system download queue while no transfer can leave the emulator.
 network_changed=true
 echo 'Disabling emulator Wi-Fi'
 "$adb_bin" -s "$serial" shell svc wifi disable
