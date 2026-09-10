@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.EntryPointAccessors
@@ -33,7 +34,14 @@ class UpdateLiveTest {
         assumeTrue(InstrumentationRegistry.getArguments().getString("runLiveUpdateTests") == "true")
         assumeTrue(context.applicationContext is ZoteroApplication)
         val repository = EntryPointAccessors.fromApplication(context, UpdateEntryPoint::class.java).updateRepository()
-        assertTrue(repository.check())
+        var checked = false
+        repeat(3) {
+            if (!checked) {
+                checked = repository.check()
+                if (!checked) delay(2000)
+            }
+        }
+        assertTrue("Published update check failed: ${repository.state.value.error}", checked)
         assertEquals(UpdateStatus.AVAILABLE, repository.state.value.status)
         repository.download()
         withTimeout(15 * 60 * 1000L) {
@@ -47,7 +55,7 @@ class UpdateLiveTest {
         context.getSharedPreferences("update_acceptance", Context.MODE_PRIVATE).edit()
             .putBoolean("download_verified", true).commit()
         ActivityScenario.launch(UpdateActivity::class.java).use {
-            compose.onNodeWithText("Install Update").assertIsDisplayed()
+            compose.onNodeWithText("Install Update").performScrollTo().assertIsDisplayed()
         }
     }
 }

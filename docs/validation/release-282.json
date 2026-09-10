@@ -1,0 +1,42 @@
+{
+  "source": "5dd05f162d09f5899a7404fe72f20b8e490fc9a4",
+  "version": "1.0.0-282",
+  "sha256": "e973ef0eb3c32ac125b186fab5e1343e5100ed7cb65811d3cc4202fa1679be08",
+  "bytes": 183832720,
+  "package": "org.zotero.android.debug",
+  "signatureMatchesExisting": true,
+  "workflow": "https://github.com/nicholashyang/zotero-android/actions/runs/34534679624",
+  "release": "https://github.com/nicholashyang/zotero-android/releases/tag/dev-v1.0.0-282",
+  "jvmTests": 71,
+  "deviceMatrix": {
+    "23": {
+      "uiAndUpdateTests": 42,
+      "offlineRecoveryTests": 4,
+      "previousPublicVersion": 281,
+      "dataMarkerRetained": true
+    },
+    "26": {
+      "uiAndUpdateTests": 42,
+      "offlineRecoveryTests": 4,
+      "previousPublicVersion": 281,
+      "dataMarkerRetained": true
+    },
+    "33": {
+      "uiAndUpdateTests": 42,
+      "offlineRecoveryTests": 4,
+      "previousPublicVersion": 281,
+      "dataMarkerRetained": true
+    },
+    "36": {
+      "uiAndUpdateTests": 42,
+      "offlineRecoveryTests": 4,
+      "previousPublicVersion": 281,
+      "dataMarkerRetained": true
+    }
+  },
+  "localPhoneApi": 35,
+  "localTabletUiTests": 12,
+  "liveUpdateTest": "passed",
+  "liveNetwork": "GitHub-only TLS tunnel through the host proxy; no TLS interception",
+  "accountLoginAndFirstSync": "not exercised with a real account"
+}
