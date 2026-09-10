@@ -1,6 +1,7 @@
 package org.zotero.android.uicomponents.library
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,8 +21,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -33,17 +35,18 @@ import org.zotero.android.uicomponents.Strings
 @Composable
 internal fun LibrarySearchField(query: String, onQueryChange: (String) -> Unit) {
     var focused by remember { mutableStateOf(false) }
-    val focusManager = LocalFocusManager.current
+    val restingFocus = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
     val finishInput: () -> Unit = {
-        focusManager.clearFocus()
+        // Keep focus in Compose: older Android versions otherwise refocus the first text field.
+        restingFocus.requestFocus()
         keyboard?.hide()
     }
     // Dismiss input before leaving the list; keep the existing query/results.
     BackHandler(enabled = focused, onBack = finishInput)
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = LibraryMetrics.pageInset)
-            .padding(bottom = 12.dp),
+            .padding(bottom = 12.dp).focusRequester(restingFocus).focusable(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         TextField(
