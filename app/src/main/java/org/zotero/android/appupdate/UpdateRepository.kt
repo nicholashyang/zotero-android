@@ -88,6 +88,13 @@ class UpdateRepository @Inject constructor(
     fun isMetered(): Boolean =
         (context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).isActiveNetworkMetered
 
+    @Suppress("DEPRECATION")
+    private fun downloadNetworkAvailable(): Boolean {
+        val connectivity = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (connectivity.activeNetworkInfo?.isConnected != true) return false
+        return !preferences.getBoolean("automaticDownload", false) || !state.value.wifiOnly || !isMetered()
+    }
+
     /** Returns false only for transient check failures, so WorkManager can back off. */
     suspend fun check(automatic: Boolean = false): Boolean = withContext(Dispatchers.IO) {
         mutex.withLock {
@@ -171,7 +178,7 @@ class UpdateRepository @Inject constructor(
                 putBoolean("automaticDownload", automatic)
                 remove("readyVersion")
             }
-            publish(UpdateStatus.DOWNLOADING)
+            publish(if (downloadNetworkAvailable()) UpdateStatus.DOWNLOADING else UpdateStatus.WAITING_FOR_NETWORK)
             UpdateScheduler.reconcileLater(context)
         } catch (e: Exception) {
             fail(UpdateError.DOWNLOAD)
@@ -242,7 +249,8 @@ class UpdateRepository @Inject constructor(
                         fail(if (reason == DownloadManager.ERROR_INSUFFICIENT_SPACE) UpdateError.SPACE else UpdateError.DOWNLOAD)
                     }
                     DownloadManager.STATUS_PAUSED -> publish(UpdateStatus.WAITING_FOR_NETWORK)
-                    else -> publish(UpdateStatus.DOWNLOADING)
+                    // Pending requests may stay pending until connectivity returns, without a PAUSED transition.
+                    else -> publish(if (downloadNetworkAvailable()) UpdateStatus.DOWNLOADING else UpdateStatus.WAITING_FOR_NETWORK)
                 }
             }
         } catch (e: Exception) {

@@ -28,3 +28,16 @@ install_apk "$test_apk"
 grep -qE '^OK \([0-9]+ tests?\)' device-results/instrumentation.txt
 "$adb_bin" -s "$serial" shell dumpsys package org.zotero.android.debug > device-results/package.txt
 "$adb_bin" -s "$serial" exec-out run-as org.zotero.android.debug tar -cf - -C files/ui-screenshots . > device-results/screenshots.tar
+
+# Exercise the real system download queue while no transfer can leave the emulator.
+restore_network() {
+  "$adb_bin" -s "$serial" shell svc wifi enable
+  "$adb_bin" -s "$serial" shell svc data enable
+}
+trap restore_network EXIT
+"$adb_bin" -s "$serial" shell svc wifi disable
+"$adb_bin" -s "$serial" shell svc data disable
+"$adb_bin" -s "$serial" shell am instrument -w \
+  -e class org.zotero.android.library.UpdateRecoveryTest -e runOfflineUpdateTests true \
+  org.zotero.android.debug.test/org.zotero.android.library.LibraryTestRunner | tee device-results/recovery.txt
+grep -q '^OK (4 tests)' device-results/recovery.txt
