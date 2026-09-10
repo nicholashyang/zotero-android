@@ -8,6 +8,19 @@ adb_bin="${ANDROID_HOME:?}/platform-tools/adb"
 serial="${ANDROID_SERIAL:-emulator-${EMULATOR_PORT:-5554}}"
 case "$serial" in emulator-*) ;; *) echo 'An isolated emulator is required' >&2; exit 1;; esac
 mkdir -p device-results
+network_changed=false
+finish_tests() {
+  test_exit_code=$?
+  if [ "$test_exit_code" -ne 0 ]; then
+    "$adb_bin" -s "$serial" logcat -d -t 400 > device-results/failure-logcat.txt || true
+  fi
+  if "$network_changed"; then
+    "$adb_bin" -s "$serial" shell svc wifi enable || true
+    "$adb_bin" -s "$serial" shell svc data enable || true
+  fi
+  return "$test_exit_code"
+}
+trap finish_tests EXIT
 install_apk() {
   # Old PackageManager versions can report failure while adb exits successfully.
   "$adb_bin" -s "$serial" install -r "$1" | tee device-results/install.txt
@@ -27,16 +40,16 @@ install_apk "$test_apk"
   org.zotero.android.debug.test/org.zotero.android.library.LibraryTestRunner | tee device-results/instrumentation.txt
 grep -qE '^OK \([0-9]+ tests?\)' device-results/instrumentation.txt
 "$adb_bin" -s "$serial" shell dumpsys package org.zotero.android.debug > device-results/package.txt
+echo 'Exporting verified UI captures'
 "$adb_bin" -s "$serial" exec-out run-as org.zotero.android.debug tar -cf - -C files/ui-screenshots . > device-results/screenshots.tar
 
 # Exercise the real system download queue while no transfer can leave the emulator.
-restore_network() {
-  "$adb_bin" -s "$serial" shell svc wifi enable
-  "$adb_bin" -s "$serial" shell svc data enable
-}
-trap restore_network EXIT
+network_changed=true
+echo 'Disabling emulator Wi-Fi'
 "$adb_bin" -s "$serial" shell svc wifi disable
+echo 'Disabling emulator mobile data'
 "$adb_bin" -s "$serial" shell svc data disable
+echo 'Checking offline download recovery'
 "$adb_bin" -s "$serial" shell am instrument -w \
   -e class org.zotero.android.library.UpdateRecoveryTest -e runOfflineUpdateTests true \
   org.zotero.android.debug.test/org.zotero.android.library.LibraryTestRunner | tee device-results/recovery.txt
