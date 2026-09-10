@@ -146,7 +146,7 @@ jobs:
             target: default
           - api: 26
             arch: x86_64
-            target: default
+            target: google_apis
           - api: 33
             arch: x86_64
             target: google_apis
@@ -180,6 +180,7 @@ jobs:
           arch: ${{ matrix.arch }}
           target: ${{ matrix.target }}
           disk-size: 4G
+          ram-size: 2048M
           disable-animations: true
           script: bash scripts/test_update_device.sh release-assets/previous.apk release-assets/Zotero-dev-debug.apk test-apk/app-dev-debug-androidTest.apk
       - uses: actions/upload-artifact@v4
