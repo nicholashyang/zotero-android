@@ -44,6 +44,11 @@ echo 'Exporting verified UI captures'
 "$adb_bin" -s "$serial" exec-out run-as org.zotero.android.debug tar -cf - -C files/ui-screenshots . > device-results/screenshots.tar
 
 # Exercise the real system download queue while no transfer can leave the emulator.
+# Legacy system images require root for the network-control shell helpers. The app
+# and installer tests above run unprivileged; this only controls the isolated emulator.
+"$adb_bin" -s "$serial" root
+"$adb_bin" -s "$serial" wait-for-device
+test "$("$adb_bin" -s "$serial" shell id -u | tr -d '\r')" = 0
 network_changed=true
 echo 'Disabling emulator Wi-Fi'
 "$adb_bin" -s "$serial" shell svc wifi disable
