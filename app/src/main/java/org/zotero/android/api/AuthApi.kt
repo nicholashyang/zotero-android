@@ -10,6 +10,9 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface AuthApi {
+    @POST("/keys")
+    suspend fun signIn(@retrofit2.http.Body request: NativeLoginRequest): retrofit2.Response<NativeLoginResponse>
+
 
     @DELETE("/keys/sessions/{token}")
     suspend fun submitCancelLoginSessionRequest(

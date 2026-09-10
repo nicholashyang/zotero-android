@@ -53,7 +53,7 @@ internal fun ReaderColorPickerScreen(
         sendParamsAndBack()
     })
     viewModel.init(args)
-    viewModel.setOsTheme(isDark = isSystemInDarkTheme())
+    viewModel.setOsTheme(isDark = org.zotero.android.preferences.appDarkTheme())
     val viewState by viewModel.viewStates.observeAsState(ReaderColorPickerViewState())
     AppThemeM3(darkTheme = viewState.isDark) {
         CustomScaffoldM3(

@@ -1,7 +1,7 @@
 # Development builds
 
 This branch builds the existing `devDebug` variant, with application ID
-`org.zotero.android.debug`, the existing debug signing key, name and icon.
+`org.zotero.android.debug`, the existing debug signing key and icon. Its displayed name is `Zotero`.
 Release signing and PDF SDK configuration retain their upstream behavior.
 
 ## Prerequisites

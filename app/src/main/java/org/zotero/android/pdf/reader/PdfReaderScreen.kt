@@ -45,7 +45,7 @@ internal fun PdfReaderScreen(
     navigateToSingleCitationScreen: () -> Unit,
     viewModel: PdfReaderViewModel = hiltViewModel(),
 ) {
-    viewModel.setOsTheme(isDark = isSystemInDarkTheme())
+    viewModel.setOsTheme(isDark = org.zotero.android.preferences.appDarkTheme())
     val viewState by viewModel.viewStates.observeAsState(PdfReaderViewState())
     val viewEffect by viewModel.viewEffects.observeAsState()
     val activity = LocalActivity.current ?: return

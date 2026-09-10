@@ -116,7 +116,7 @@ android {
     productFlavors {
         dev {
             buildConfigField("boolean", "SELF_UPDATE_ENABLED", "true")
-            resValue("string", "app_name", """"Zotero Debug""")
+            resValue("string", "app_name", """"Zotero""")
             buildConfigField("String", "PSPDFKIT_KEY", readPspdfkitKey())
             applicationIdSuffix = ".debug"
         }

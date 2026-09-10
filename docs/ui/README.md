@@ -91,3 +91,5 @@ fixture；基线 ItemCellModel 的业务构建路径仍初始化为空颜色列�
 
 PDF SDK 依赖及无密钥初始化路径保持原状。缺少正式授权时，开发 APK 的
 可安装性与界面测试通过不代表 PDF 阅读、批注、导出功能或发布授权完整。
+
+后续移动端改版见 [Mobile interface update](MOBILE-UI.md)。

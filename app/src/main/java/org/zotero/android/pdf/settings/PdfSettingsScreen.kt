@@ -29,7 +29,7 @@ internal fun PdfSettingsScreen(
         viewModel.init(args = args)
     }
 
-    viewModel.setOsTheme(isDark = isSystemInDarkTheme())
+    viewModel.setOsTheme(isDark = org.zotero.android.preferences.appDarkTheme())
     val viewState by viewModel.viewStates.observeAsState(PdfSettingsViewState())
     AppThemeM3(
         darkTheme = viewState.isDark,

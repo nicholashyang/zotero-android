@@ -19,6 +19,7 @@ data class ItemCellModel(
     val hasNote: Boolean,
     val accessory: Accessory?,
     val tagColors: SnapshotStateList<Color>,
+    val abstract: String = "",
 ) {
 
     sealed class Accessory {
@@ -52,6 +53,7 @@ data class ItemCellModel(
                 typeIconName = dbRow!!.typeIconName,
                 typeName = typeName,
                 title = dbRow!!.title,
+                abstract = item.fields.firstOrNull { it.key == org.zotero.android.database.objects.FieldKeys.Item.abstractN }?.value.orEmpty(),
                 subtitle = dbRow!!.subtitle,
                 hasNote = hasNote,
                 accessory = accessory,

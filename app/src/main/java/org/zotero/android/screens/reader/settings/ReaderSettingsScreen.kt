@@ -29,7 +29,7 @@ internal fun ReaderSettingsScreen(
         viewModel.init(args = args)
     }
 
-    viewModel.setOsTheme(isDark = isSystemInDarkTheme())
+    viewModel.setOsTheme(isDark = org.zotero.android.preferences.appDarkTheme())
     val viewState by viewModel.viewStates.observeAsState(ReaderSettingsViewState())
     AppThemeM3(
         darkTheme = viewState.isDark,

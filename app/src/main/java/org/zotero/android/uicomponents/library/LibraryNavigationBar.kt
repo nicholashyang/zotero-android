@@ -1,5 +1,6 @@
 package org.zotero.android.uicomponents.library
 
+import androidx.compose.foundation.clickable
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.sizeIn
@@ -22,6 +23,7 @@ import org.zotero.android.uicomponents.Strings
 @Composable
 internal fun LibraryNavigationBar(
     title: String,
+    onTitleClick: (() -> Unit)? = null,
     largeTitle: Boolean = false,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     onBack: (() -> Unit)? = null,
@@ -39,7 +41,7 @@ internal fun LibraryNavigationBar(
         actionIconContentColor = MaterialTheme.colorScheme.primary,
     )
     val titleContent: @Composable () -> Unit = {
-        Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(title, modifier = if (onTitleClick != null) Modifier.clickable(onClick = onTitleClick) else Modifier, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
     if (largeTitle) {
         LargeTopAppBar(

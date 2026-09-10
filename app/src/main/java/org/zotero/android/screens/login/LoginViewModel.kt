@@ -70,8 +70,53 @@ internal class LoginViewModel @Inject constructor(
 
     var webView: WebView? = null
 
+    private var nativeJob: Job? = null
+    private var didRegister = false
+
+    fun signIn(username: String, password: String) {
+        if (nativeJob?.isActive == true || didRegister || username.isBlank() || password.isEmpty()) return
+        updateState { copy(nativeBusy = true, nativeError = null) }
+        nativeJob = viewModelScope.launch {
+            try {
+                val response = authApi.signIn(org.zotero.android.api.NativeLoginRequest(username.trim(), password))
+                val result = response.body()
+                if (response.isSuccessful && result?.isValid() == true) {
+                    completeLogin(result.userID!!, result.username!!, result.key!!)
+                } else {
+                    updateState { copy(nativeError = org.zotero.android.R.string.mobile_login_invalid) }
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                updateState { copy(nativeError = org.zotero.android.R.string.mobile_login_network) }
+            } finally {
+                updateState { copy(nativeBusy = false) }
+            }
+        }
+    }
+
+    private fun completeLogin(userId: Long, username: String, apiKey: String) {
+        if (didRegister) return
+        didRegister = true
+        sessionStatus = SessionStatus.completed
+        stopSessionMonitoring(sessionToken)
+        sessionController.register(userId, username, "", apiKey)
+        triggerEffect(LoginViewEffect.NavigateToDashboard)
+    }
+
+    fun cancelNativeLogin() { nativeJob?.cancel(); nativeJob = null }
+
+    fun webError(failed: Boolean) { updateState { copy(webError = failed) } }
+
+    fun retryWebLogin() {
+        webError(false)
+        if (sessionStatus == null) webView?.let { init(it) }
+        else webView?.reload()
+    }
+
     fun init(webView: WebView) {
         this.webView = webView
+        loginUrl?.let { webView.loadUrl(it); return }
 
         val requestKind = screenArgs.requestKind
         viewModelScope.launch {
@@ -117,6 +162,7 @@ internal class LoginViewModel @Inject constructor(
             result as CustomResult.GeneralError
             val errorText = loginError(result).localizedDescription
             Timber.e("LoginViewModel: could not create login session: $errorText")
+            webError(true)
             showError(errorText)
         }
     }
@@ -158,18 +204,10 @@ internal class LoginViewModel @Inject constructor(
                             }
 
                             is CheckLoginSessionResponse.Status.completed -> {
-                                if (this@LoginViewModel.sessionStatus == SessionStatus.checking) {
-                                    this@LoginViewModel.sessionStatus = SessionStatus.completed
-                                    stopSessionMonitoring(token)
-                                    sessionController.register(
-                                        userId = response.status.userId,
-                                        username = response.status.username,
-                                        displayName = "",
-                                        apiToken = response.status.apiKey
-                                    )
-                                }
                                 viewModelScope.launch {
-                                    triggerEffect(LoginViewEffect.NavigateToDashboard)
+                                    if (sessionStatus == SessionStatus.checking) {
+                                        completeLogin(response.status.userId, response.status.username, response.status.apiKey)
+                                    }
                                 }
                             }
 
@@ -205,10 +243,7 @@ internal class LoginViewModel @Inject constructor(
                 }
                 when (response) {
                     is LoginWsResponse.Kind.complete -> {
-                        this.sessionStatus = SessionStatus.completed
-                        stopSessionMonitoring(token)
-                        sessionController.register(userId = response.userId, username = response.username, displayName = "", apiToken = response.apiKey)
-                        triggerEffect(LoginViewEffect.NavigateToDashboard)
+                        completeLogin(response.userId, response.username, response.apiKey)
                     }
                     is LoginWsResponse.Kind.cancelled -> {
                         stopSessionMonitoring(token)
@@ -291,7 +326,9 @@ internal class LoginViewModel @Inject constructor(
 
     override fun onCleared() {
         stopSessionMonitoring(this.sessionToken)
+        cancelNativeLogin()
         cancelLoginSessionIfNeeded()
+        super.onCleared()
     }
 
     private fun cancelLoginSessionIfNeeded() = CoroutineScope(dispatchers.main).launch {
@@ -318,6 +355,9 @@ internal class LoginViewModel @Inject constructor(
 }
 
 internal data class LoginViewState(
+    val webError: Boolean = false,
+    val nativeBusy: Boolean = false,
+    val nativeError: Int? = null,
     val snackbarMessage: SnackbarMessage? = null,
 ) : ViewState
 

@@ -25,6 +25,7 @@ import kotlinx.coroutines.withContext
 import org.zotero.android.BuildConfig
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 import java.security.MessageDigest
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -42,7 +43,7 @@ class UpdateRepository @Inject constructor(
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val mutableState = MutableStateFlow(AppUpdateState(
         manifest = preferences.getString("manifest", null)?.let { runCatching { AppUpdateManifest.parse(it) }.getOrNull() },
-        automatic = preferences.getBoolean("automatic", true),
+        automatic = true,
         wifiOnly = preferences.getBoolean("wifiOnly", true),
         lastChecked = preferences.getLong("lastChecked", 0),
     ))
@@ -53,35 +54,20 @@ class UpdateRepository @Inject constructor(
 
     fun start() {
         if (!BuildConfig.SELF_UPDATE_ENABLED) return
-        UpdateScheduler.schedule(context, state.value.automatic)
-        scope.launch { refresh() }
-    }
-
-    fun setAutomatic(enabled: Boolean) {
-        preferences.edit { putBoolean("automatic", enabled) }
-        mutableState.update { it.copy(automatic = enabled) }
-        UpdateScheduler.schedule(context, enabled)
+        UpdateScheduler.schedule(context, true)
         scope.launch {
             mutex.withLock {
-                if (!state.value.automatic && preferences.getBoolean("automaticDownload", false)) {
-                    removeDownload()
-                    publish(if (state.value.manifest != null) UpdateStatus.AVAILABLE else UpdateStatus.IDLE)
+                // One-time migration from automatic APK downloads to notifications only.
+                if (!preferences.getBoolean("notifyOnlyMigrated", false)) {
+                    if (preferences.getBoolean("automaticDownload", false)) {
+                        removeDownload()
+                        publish(if (state.value.manifest != null) UpdateStatus.AVAILABLE else UpdateStatus.IDLE)
+                    }
+                    preferences.edit { remove("automatic"); remove("wifiOnly"); putBoolean("notifyOnlyMigrated", true) }
                 }
+                reconcile()
             }
-        }
-    }
-
-    fun setWifiOnly(enabled: Boolean) {
-        preferences.edit { putBoolean("wifiOnly", enabled) }
-        mutableState.update { it.copy(wifiOnly = enabled) }
-        scope.launch {
-            mutex.withLock {
-                if (downloadId != -1L && preferences.getBoolean("automaticDownload", false)) {
-                    removeDownload()
-                    if (state.value.automatic) enqueueDownload(automatic = true)
-                    else publish(UpdateStatus.AVAILABLE)
-                }
-            }
+            if (System.currentTimeMillis() - state.value.lastChecked >= TimeUnit.HOURS.toMillis(24)) check(automatic = true)
         }
     }
 
@@ -98,7 +84,7 @@ class UpdateRepository @Inject constructor(
     /** Returns false only for transient check failures, so WorkManager can back off. */
     suspend fun check(automatic: Boolean = false): Boolean = withContext(Dispatchers.IO) {
         mutex.withLock {
-            if (!BuildConfig.SELF_UPDATE_ENABLED || (automatic && !state.value.automatic)) return@withLock true
+            if (!BuildConfig.SELF_UPDATE_ENABLED) return@withLock true
             reconcile()
             if (downloadId != -1L || state.value.status == UpdateStatus.READY) return@withLock true
             // Coalesce a foreground check racing the periodic worker or another tap.
@@ -122,7 +108,10 @@ class UpdateRepository @Inject constructor(
                 } else {
                     saveManifest(manifest)
                     publish(UpdateStatus.AVAILABLE)
-                    if (automatic && state.value.automatic) enqueueDownload(automatic = true)
+                    if (preferences.getLong("notifiedVersion", -1) != manifest.versionCode &&
+                        UpdateNotifications.available(context, manifest.versionName)) {
+                        preferences.edit { putLong("notifiedVersion", manifest.versionCode) }
+                    }
                 }
                 true
             } catch (e: CancellationException) {

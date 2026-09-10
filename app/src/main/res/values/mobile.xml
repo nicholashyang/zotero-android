@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="mobile_appearance" tools:ignore="MissingTranslation">Appearance</string>
+    <string name="mobile_theme_system" tools:ignore="MissingTranslation">Follow system</string>
+    <string name="mobile_theme_light" tools:ignore="MissingTranslation">Day</string>
+    <string name="mobile_theme_dark" tools:ignore="MissingTranslation">Night</string>
+    <string name="mobile_swipes" tools:ignore="MissingTranslation">Swipe actions</string>
+    <string name="mobile_swipe_left" tools:ignore="MissingTranslation">Swipe left</string>
+    <string name="mobile_swipe_right" tools:ignore="MissingTranslation">Swipe right</string>
+    <string name="mobile_swipe_none" tools:ignore="MissingTranslation">No action</string>
+    <string name="mobile_swipe_collection" tools:ignore="MissingTranslation">Add to collection</string>
+    <string name="mobile_swipe_trash" tools:ignore="MissingTranslation">Move to trash</string>
+    <string name="mobile_swipe_open" tools:ignore="MissingTranslation">Open attachment or link</string>
+    <string name="mobile_swipe_more" tools:ignore="MissingTranslation">More actions</string>
+    <string name="mobile_swipe_hint" tools:ignore="MissingTranslation">Swipe to reveal an action, then tap to run it.</string>
+    <string name="mobile_permissions" tools:ignore="MissingTranslation">App permissions</string>
+    <string name="mobile_camera" tools:ignore="MissingTranslation">Camera · Scan barcodes</string>
+    <string name="mobile_notifications" tools:ignore="MissingTranslation">Notifications · Update reminders</string>
+    <string name="mobile_install" tools:ignore="MissingTranslation">Install apps · Software updates</string>
+    <string name="mobile_permission_granted" tools:ignore="MissingTranslation">Allowed</string>
+    <string name="mobile_permission_denied" tools:ignore="MissingTranslation">Not allowed · Tap to manage</string>
+    <string name="mobile_system_settings" tools:ignore="MissingTranslation">Open system app settings</string>
+    <string name="mobile_files_hint" tools:ignore="MissingTranslation">Files are accessed through the system file picker. No broad storage permission is needed.</string>
+    <string name="mobile_login_title" tools:ignore="MissingTranslation">Sign in to Zotero</string>
+    <string name="mobile_login_description" tools:ignore="MissingTranslation">Your research library, wherever you go.</string>
+    <string name="mobile_username" tools:ignore="MissingTranslation">Username or email</string>
+    <string name="mobile_password" tools:ignore="MissingTranslation">Password</string>
+    <string name="mobile_show_password" tools:ignore="MissingTranslation">Show password</string>
+    <string name="mobile_hide_password" tools:ignore="MissingTranslation">Hide password</string>
+    <string name="mobile_login" tools:ignore="MissingTranslation">Sign in</string>
+    <string name="mobile_login_web" tools:ignore="MissingTranslation">Use website sign-in</string>
+    <string name="mobile_register" tools:ignore="MissingTranslation">Create an account</string>
+    <string name="mobile_forgot" tools:ignore="MissingTranslation">Forgot password?</string>
+    <string name="mobile_login_invalid" tools:ignore="MissingTranslation">Sign-in was unsuccessful. Check your credentials, or use website sign-in for additional verification.</string>
+    <string name="mobile_login_network" tools:ignore="MissingTranslation">Unable to connect. Check your connection and try again.</string>
+    <string name="mobile_login_busy" tools:ignore="MissingTranslation">Signing in…</string>
+    <string name="mobile_retry" tools:ignore="MissingTranslation">Try again</string>
+    <string name="mobile_library_switch" tools:ignore="MissingTranslation">Switch library</string>
+    <string name="mobile_collections" tools:ignore="MissingTranslation">Collections</string>
+    <string name="mobile_update_policy" tools:ignore="MissingTranslation">New versions are checked automatically. Downloads and installation start only when you choose.</string>
+    <string name="mobile_update_found" tools:ignore="MissingTranslation">Zotero %1$s is available</string>
+    <string name="mobile_trash_question" tools:ignore="MissingTranslation">Move this item to the trash?</string>
+</resources>

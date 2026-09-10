@@ -51,6 +51,7 @@ internal fun AllItemsScreen(
     val viewState by viewModel.viewStates.observeAsState(AllItemsViewState())
     val viewEffect by viewModel.viewEffects.observeAsState()
     val lazyListState = rememberLazyListState()
+    LaunchedEffect(viewState.libraryName, viewState.collectionName) { lazyListState.scrollToItem(0) }
 
     val isTablet = layoutType.isTablet()
 
@@ -153,16 +154,9 @@ internal fun AllItemsScreen(
     }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
-    LibraryScaffold(
+    HomeLibraryScaffold(
+        viewModel = viewModel, viewState = viewState, isTablet = isTablet, onOpenWebpage = onOpenWebpage,
         scrollBehavior = scrollBehavior,
-        topBar = {
-            AllItemsTopBar(
-                scrollBehavior = scrollBehavior,
-                viewState = viewState,
-                viewModel = viewModel,
-                layoutType = layoutType,
-            )
-        },
         bottomBar = {
             AllItemsBottomPanelNew(
                 viewModel = viewModel,
@@ -191,6 +185,8 @@ internal fun AllItemsScreen(
                 isRefreshing = viewState.isRefreshing,
                 isItemSelected = viewState::isSelected,
                 getItemAccessory = viewState::getAccessoryForItem,
+                canSwipe = viewModel::canSwipe,
+                onSwipe = viewModel::performSwipe,
                 onItemTapped = viewModel::onItemTapped,
                 onAccessoryTapped = viewModel::onAccessoryTapped,
                 onItemLongTapped = viewModel::onItemLongTapped,
@@ -224,6 +220,16 @@ internal fun AllItemsScreen(
             }
             if (viewState.isGeneratingCitation) {
                 GeneratingCitationLoadingIndicator()
+            }
+        }
+    }
+    if (viewState.showMoreActions && viewState.isEditing) {
+        androidx.compose.material3.ModalBottomSheet(onDismissRequest = viewModel::onDone) {
+            val actions = editingSingleItemSelectedActions(viewModel, viewState, androidx.compose.material3.MaterialTheme.colorScheme.error)
+            (actions.panelItems + actions.overflowItems).forEach { action ->
+                androidx.compose.material3.TextButton(onClick = { viewModel.dismissMoreActions(); action.onClick() }) {
+                    androidx.compose.material3.Text(safeStringResource(action.overflowTextResId))
+                }
             }
         }
     }

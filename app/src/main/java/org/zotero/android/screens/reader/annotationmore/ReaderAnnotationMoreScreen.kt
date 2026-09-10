@@ -43,7 +43,7 @@ internal fun ReaderAnnotationMoreScreen(
     LaunchedEffect(args) {
         viewModel.init(args = args)
     }
-    viewModel.setOsTheme(isDark = isSystemInDarkTheme())
+    viewModel.setOsTheme(isDark = org.zotero.android.preferences.appDarkTheme())
     val viewState by viewModel.viewStates.observeAsState(ReaderAnnotationMoreViewState())
     val viewEffect by viewModel.viewEffects.observeAsState()
     AppThemeM3 {

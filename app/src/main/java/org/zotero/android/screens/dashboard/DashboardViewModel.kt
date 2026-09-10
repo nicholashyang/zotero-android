@@ -160,10 +160,14 @@ class DashboardViewModel @Inject constructor(
                 setDebugWindow(true)
             }
 
-            val data = loadInitialDetailData(
-                collectionId = fileStore.getSelectedCollectionIdAsync(),
-                libraryId = fileStore.getSelectedLibraryAsync()
-            )
+            val all = CollectionIdentifier.custom(CollectionIdentifier.CustomType.all)
+            fileStore.setSelectedCollectionIdAsync(all)
+            var data = loadInitialDetailData(all, fileStore.getSelectedLibraryAsync())
+            if (data == null) {
+                val personal = LibraryIdentifier.custom(RCustomLibraryType.myLibrary)
+                fileStore.setSelectedLibraryAsync(personal)
+                data = loadInitialDetailData(all, personal)
+            }
             if (data != null) {
                 showItems(data.collection, data.library, searchItemKeys = null)
             }
@@ -226,6 +230,10 @@ class DashboardViewModel @Inject constructor(
                     is CollectionIdentifier.custom -> {
                         collection = Collection.initWithCustomType(type = collectionId.type)
                     }
+                }
+                if (libraryId is LibraryIdentifier.group) {
+                    val group = coordinator.perform(ReadAllGroupsDbRequest()).firstOrNull { it.identifier == libraryId.groupId }
+                    if (group == null || group.isLocalOnly) throw IllegalStateException("Library no longer available")
                 }
                 library = coordinator.perform(request = ReadLibraryDbRequest(libraryId = libraryId))
 
@@ -431,6 +439,11 @@ class DashboardViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onHomeCollections(event: org.zotero.android.screens.allitems.HomeCollectionsRequest) {
+        showCollections(event.libraryId)
     }
 
     fun showCollections(libraryId: LibraryIdentifier) {

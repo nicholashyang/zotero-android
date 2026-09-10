@@ -31,7 +31,7 @@ object CustomTheme {
 @Composable
 fun CustomTheme(
     dynamicThemeColors: DynamicThemeColors = DynamicThemeColors(),
-    isDarkTheme: Boolean = isSystemInDarkTheme(),
+    isDarkTheme: Boolean = org.zotero.android.preferences.appDarkTheme(),
     content: @Composable () -> Unit
 ) {
     val customTypography = CustomTypography()
@@ -56,7 +56,7 @@ fun CustomTheme(
 @Composable
 fun CustomThemeWithStatusAndNavBars(
     dynamicThemeColors: DynamicThemeColors = DynamicThemeColors(),
-    isDarkTheme: Boolean = isSystemInDarkTheme(),
+    isDarkTheme: Boolean = org.zotero.android.preferences.appDarkTheme(),
     content: @Composable () -> Unit
 ) {
     CustomTheme(dynamicThemeColors = dynamicThemeColors, isDarkTheme = isDarkTheme, content = content)

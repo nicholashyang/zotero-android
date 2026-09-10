@@ -14,6 +14,23 @@ object UpdateNotifications {
     private const val CHANNEL = "app-updates"
     private const val ID = 8217
 
+    fun available(context: Context, version: String): Boolean {
+        if (Build.VERSION.SDK_INT >= 26) {
+            context.getSystemService(NotificationManager::class.java).createNotificationChannel(
+                NotificationChannel(CHANNEL, context.getString(R.string.update_title), NotificationManager.IMPORTANCE_DEFAULT))
+        }
+        val manager = NotificationManagerCompat.from(context)
+        if (!manager.areNotificationsEnabled()) return false
+        val intent = PendingIntent.getActivity(context, 0, Intent(context, UpdateActivity::class.java),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val notification = NotificationCompat.Builder(context, CHANNEL)
+            .setSmallIcon(android.R.drawable.stat_sys_download_done)
+            .setContentTitle(context.getString(R.string.update_available))
+            .setContentText(context.getString(R.string.mobile_update_found, version))
+            .setContentIntent(intent).setAutoCancel(true).build()
+        return try { manager.notify(ID, notification); true } catch (_: SecurityException) { false }
+    }
+
     fun ready(context: Context, version: String) {
         if (Build.VERSION.SDK_INT >= 26) {
             context.getSystemService(NotificationManager::class.java).createNotificationChannel(

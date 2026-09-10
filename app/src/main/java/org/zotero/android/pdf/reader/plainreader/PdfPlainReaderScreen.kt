@@ -14,7 +14,7 @@ internal fun PdfPlainReaderScreen(
     onBack: () -> Unit,
     viewModel: PdfPlainReaderViewModel = hiltViewModel(),
 ) {
-    viewModel.setOsTheme(isDark = isSystemInDarkTheme())
+    viewModel.setOsTheme(isDark = org.zotero.android.preferences.appDarkTheme())
     val viewState by viewModel.viewStates.observeAsState(PdfPlainReaderViewState())
     val viewEffect by viewModel.viewEffects.observeAsState()
 

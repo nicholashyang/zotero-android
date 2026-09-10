@@ -1,5 +1,6 @@
 package org.zotero.android.screens.itemdetails
 
+import org.zotero.android.uicomponents.library.pageSwipe
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -112,6 +113,7 @@ internal fun ItemDetailsScreen(
     }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     LibraryScaffold(
+        modifier = Modifier.pageSwipe(!viewState.isEditing, viewModel::onCancelOrBackClicked),
         scrollBehavior = scrollBehavior,
         topBar = {
             if (viewState.isEditing) {

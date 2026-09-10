@@ -16,5 +16,5 @@ fun Int.prettyPrint(): String = String.format(Locale.getDefault(), "%,d", this)
 val Context.isDarkTheme: Boolean
     get() {
         val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        return currentNightMode == Configuration.UI_MODE_NIGHT_YES
+        return org.zotero.android.preferences.AppPreferences.get(this).state.value.appearance.isDark(currentNightMode == Configuration.UI_MODE_NIGHT_YES)
     }

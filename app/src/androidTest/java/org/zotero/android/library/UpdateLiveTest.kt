@@ -33,7 +33,6 @@ class UpdateLiveTest {
         assumeTrue(InstrumentationRegistry.getArguments().getString("runLiveUpdateTests") == "true")
         assumeTrue(context.applicationContext is ZoteroApplication)
         val repository = EntryPointAccessors.fromApplication(context, UpdateEntryPoint::class.java).updateRepository()
-        repository.setAutomatic(false)
         assertTrue(repository.check())
         assertEquals(UpdateStatus.AVAILABLE, repository.state.value.status)
         repository.download()

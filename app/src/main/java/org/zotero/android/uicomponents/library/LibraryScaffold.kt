@@ -18,6 +18,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 @Composable
 internal fun LibraryScaffold(
     topBar: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
     bottomBar: @Composable () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior? = null,
     content: @Composable () -> Unit,
@@ -26,7 +27,7 @@ internal fun LibraryScaffold(
         Modifier.nestedScroll(it.nestedScrollConnection)
     } ?: Modifier
     Scaffold(
-        modifier = Modifier.fillMaxSize().imePadding().then(scrollModifier),
+        modifier = modifier.fillMaxSize().imePadding().then(scrollModifier),
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets.safeDrawing,
         topBar = topBar,

@@ -8,7 +8,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 @Composable
 fun DynamicTheme(
     dynamicThemeColors: DynamicThemeColors = DynamicThemeColors(),
-    isDarkTheme: Boolean = isSystemInDarkTheme(),
+    isDarkTheme: Boolean = org.zotero.android.preferences.appDarkTheme(),
     content: @Composable () -> Unit
 ) {
     val colors = createSemanticColors(

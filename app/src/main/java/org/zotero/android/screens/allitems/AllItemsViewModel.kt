@@ -223,6 +223,7 @@ internal class AllItemsViewModel @Inject constructor(
                     error = args.error,
                     isCollectionTrash = this@AllItemsViewModel.collection.identifier.isTrash,
                     isCollectionACollection = this@AllItemsViewModel.collection.identifier.isCollection,
+                    libraryName = this@AllItemsViewModel.library.name,
                     collectionName = this@AllItemsViewModel.collection.name
                 )
             }
@@ -643,6 +644,10 @@ internal class AllItemsViewModel @Inject constructor(
             return
         }
 
+        allItemsProcessor.getResultByKey(item.key)?.let(::showMetadata)
+    }
+
+    fun openItemContent(item: ItemCellModel) {
         val accessory = allItemsProcessor.getItemAccessoryByKey(item.key)
         if (accessory == null) {
             showMetadata(allItemsProcessor.getResultByKey(item.key)!!)
@@ -658,6 +663,78 @@ internal class AllItemsViewModel @Inject constructor(
                 is ItemAccessory.doi -> showDoi(accessory.doi)
                 is ItemAccessory.url -> showUrl(url = accessory.url)
             }
+        }
+    }
+
+    fun availableLibraries(): List<Library> {
+        var result: List<Library> = emptyList()
+        dbWrapperMain.realmDbStorage.perform { coordinator ->
+        result = coordinator.perform(org.zotero.android.database.requests.ReadAllCustomLibrariesDbRequest()).map { Library(customLibrary = it) } +
+            coordinator.perform(org.zotero.android.database.requests.ReadAllGroupsDbRequest()).filter { !it.isLocalOnly }.map { Library(group = it) }
+        }
+        return result
+    }
+
+    fun availableCollections(): List<Collection> {
+        var result: List<Collection> = emptyList()
+        dbWrapperMain.realmDbStorage.perform { coordinator ->
+        val custom = CollectionIdentifier.CustomType.entries.filter {
+            it != CollectionIdentifier.CustomType.publications || library.identifier is LibraryIdentifier.custom
+        }.map { Collection.initWithCustomType(it) }
+        val collections = coordinator.perform(org.zotero.android.database.requests.ReadCollectionsDbRequest(library.identifier, isAsync = false))
+        val byKey = collections.associateBy { it.key }
+        fun path(item: org.zotero.android.database.objects.RCollection): String {
+            val names = mutableListOf(item.name)
+            val seen = mutableSetOf(item.key)
+            var parent = item.parentKey
+            while (parent != null && seen.add(parent)) {
+                val value = byKey[parent] ?: break
+                names.add(0, value.name); parent = value.parentKey
+            }
+            return names.joinToString(" / ")
+        }
+        result = custom + collections.map { Collection(CollectionIdentifier.collection(it.key), path(it), 0) }.sortedBy { it.name.lowercase() }
+        }
+        return result
+    }
+
+    fun selectLibrary(id: LibraryIdentifier) {
+        val selected = availableLibraries().firstOrNull { it.identifier == id }
+            ?: availableLibraries().firstOrNull { it.identifier is LibraryIdentifier.custom } ?: return
+        library = selected
+        fileStore.setSelectedLibrary(selected.identifier)
+        selectHomeCollection(Collection.initWithCustomType(CollectionIdentifier.CustomType.all))
+        if (isTablet) navigateToCollections()
+    }
+
+    fun selectHomeCollection(value: Collection) {
+        collection = value
+        fileStore.setSelectedCollectionId(value.identifier)
+        updateState { AllItemsViewState(lce = LCE2.Loading, libraryName = library.name, collectionName = value.name,
+            isCollectionTrash = value.identifier.isTrash, isCollectionACollection = value.identifier.isCollection) }
+        ScreenArguments.allItemsArgs = org.zotero.android.screens.allitems.data.AllItemsArgs(value, library, null, null)
+        allItemsProcessor.reloadLibrary()
+    }
+
+    fun canSwipe(key: String, action: org.zotero.android.preferences.SwipeAction): Boolean {
+        val item = allItemsProcessor.getResultByKey(key) ?: return false
+        return when (action) {
+            org.zotero.android.preferences.SwipeAction.NONE -> false
+            org.zotero.android.preferences.SwipeAction.TRASH -> library.metadataEditable && !viewState.isCollectionTrash
+            org.zotero.android.preferences.SwipeAction.COLLECTION -> library.metadataEditable && !viewState.isCollectionTrash && item.parent == null
+            org.zotero.android.preferences.SwipeAction.OPEN -> allItemsProcessor.getItemAccessoryByKey(key) != null
+            org.zotero.android.preferences.SwipeAction.MORE -> true
+        }
+    }
+
+    fun performSwipe(item: ItemCellModel, action: org.zotero.android.preferences.SwipeAction) {
+        if (viewState.isEditing || !canSwipe(item.key, action)) return
+        when (action) {
+            org.zotero.android.preferences.SwipeAction.COLLECTION -> showCollectionPicker(setOf(item.key))
+            org.zotero.android.preferences.SwipeAction.OPEN -> openItemContent(item)
+            org.zotero.android.preferences.SwipeAction.TRASH -> viewModelScope.launch { trashItems(setOf(item.key)) }
+            org.zotero.android.preferences.SwipeAction.MORE -> { onItemLongTapped(item.key); updateState { copy(showMoreActions = true) } }
+            org.zotero.android.preferences.SwipeAction.NONE -> Unit
         }
     }
 
@@ -888,7 +965,10 @@ internal class AllItemsViewModel @Inject constructor(
         startEditing()
     }
 
+    fun dismissMoreActions() { updateState { copy(showMoreActions = false) } }
+
     fun onDone() {
+        dismissMoreActions()
         stopEditing()
     }
 
@@ -932,6 +1012,10 @@ internal class AllItemsViewModel @Inject constructor(
     }
 
     fun navigateToCollections() {
+        if (isTablet) {
+            EventBus.getDefault().post(HomeCollectionsRequest(library.identifier))
+            return
+        }
         viewModelScope.launch {
             val collectionsArgs = CollectionsArgs(libraryId = fileStore.getSelectedLibraryAsync(), fileStore.getSelectedCollectionIdAsync())
             val encodedArgs = navigationParamsMarshaller.encodeObjectToBase64(collectionsArgs, StandardCharsets.UTF_8)
@@ -1420,6 +1504,8 @@ internal data class AllItemsViewState(
     val filters: PersistentList<ItemsFilter> = persistentListOf(),
     val isCollectionTrash: Boolean = false,
     val isCollectionACollection: Boolean = false,
+    val showMoreActions: Boolean = false,
+    val libraryName: String = "",
     val collectionName: String = "",
     val showDownloadedFilesPopup: Boolean = false,
     val isGeneratingBibliography: Boolean = false,
@@ -1490,3 +1576,5 @@ internal sealed class AllItemsViewEffect : ViewEffect {
     object ShowCitationBibliographyExportEffect: AllItemsViewEffect()
 
 }
+
+data class HomeCollectionsRequest(val libraryId: LibraryIdentifier)

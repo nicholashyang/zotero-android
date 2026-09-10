@@ -28,7 +28,7 @@ internal fun PdfAnnotationEditPageScreen(
     onBack: () -> Unit,
 ) {
     viewModel.init()
-    viewModel.setOsTheme(isDark = isSystemInDarkTheme())
+    viewModel.setOsTheme(isDark = org.zotero.android.preferences.appDarkTheme())
     val viewState by viewModel.viewStates.observeAsState(PdfAnnotationEditPageViewState())
     val viewEffect by viewModel.viewEffects.observeAsState()
     AppThemeM3(

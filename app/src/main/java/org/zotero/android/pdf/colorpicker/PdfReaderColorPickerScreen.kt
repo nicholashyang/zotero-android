@@ -43,7 +43,7 @@ internal fun PdfReaderColorPickerScreen(
     viewModel: PdfReaderColorPickerViewModel = hiltViewModel(),
 ) {
     viewModel.init()
-    viewModel.setOsTheme(isDark = isSystemInDarkTheme())
+    viewModel.setOsTheme(isDark = org.zotero.android.preferences.appDarkTheme())
     val viewState by viewModel.viewStates.observeAsState(PdfReaderColorPickerViewState())
     val viewEffect by viewModel.viewEffects.observeAsState()
     AppThemeM3(darkTheme = viewState.isDark) {

@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -32,6 +32,12 @@ internal fun SettingsScreen(
     toQuickCopyScreen: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
+    var permissions by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
+    if (permissions) {
+        AppPermissionsScreen(onBack = { permissions = false })
+        return
+    }
+    androidx.activity.compose.BackHandler(onBack = onBack)
     val viewEffect by viewModel.viewEffects.observeAsState()
     LaunchedEffect(key1 = viewModel) {
         viewModel.init()
@@ -61,6 +67,7 @@ internal fun SettingsScreen(
             toDebugScreen = toDebugScreen,
             openSupport = viewModel::openSupportAndFeedback,
             openPrivacyPolicy = viewModel::openPrivacyPolicy,
+            preferencesContent = { MobilePreferencesGroup(onPermissions = { permissions = true }) },
             updateContent = { UpdatePanel(viewModel.updates, standalone = false) },
         )
     }
@@ -74,6 +81,7 @@ internal fun SettingsContent(
     toDebugScreen: () -> Unit,
     openSupport: () -> Unit,
     openPrivacyPolicy: () -> Unit,
+    preferencesContent: @Composable () -> Unit = {},
     updateContent: @Composable () -> Unit = { UpdateSection(AppUpdateState()) },
 ) {
     LazyColumn(
@@ -105,6 +113,7 @@ internal fun SettingsContent(
                 LibraryRow(stringResource(Strings.privacy_policy), openPrivacyPolicy)
             }
         }
+        item { preferencesContent() }
         item { updateContent() }
     }
 }

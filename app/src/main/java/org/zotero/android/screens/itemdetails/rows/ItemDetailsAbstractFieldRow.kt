@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import org.zotero.android.uicomponents.math.MathText
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,7 +20,7 @@ internal fun ItemDetailsAbstractFieldRow(
     Column(modifier = Modifier.padding(16.dp)) {
         ItemDetailHeaderSection(Strings.abstract_1)
         Spacer(modifier = Modifier.height(8.dp))
-        Text(
+        MathText(
             text = detailValue,
             color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.bodyLarge,

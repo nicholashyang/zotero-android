@@ -68,14 +68,28 @@ class AppUpdateTest {
         assertEquals(1, requests.get())
     }
 
-    @Test fun preferencesSurviveRepositoryRecreation() {
+    @Test fun automaticChecksIgnoreLegacyOptOut() {
         val preferences = context.getSharedPreferences("app_updates", Context.MODE_PRIVATE)
+        preferences.edit().clear().putBoolean("automatic", false).commit()
+        assertTrue(repository().state.value.automatic)
         preferences.edit().clear().commit()
-        repository().apply { setAutomatic(false); setWifiOnly(false) }
-        val restored = repository().state.value
-        assertFalse(restored.automatic)
-        assertFalse(restored.wifiOnly)
-        preferences.edit().clear().commit()
+    }
+
+    @Test fun automaticCheckNeverStartsADownload(): Unit = runBlocking {
+        val prefs = context.getSharedPreferences("app_updates", Context.MODE_PRIVATE)
+        prefs.edit().clear().commit()
+        val manifest = AppUpdateManifest(BuildConfig.VERSION_CODE.toLong() + 1, "1.0.0-next", context.packageName,
+            "devDebug", 23, 1024, "0".repeat(64),
+            "https://github.com/nicholashyang/zotero-android/releases/download/test/app.apk", "Update fixture")
+        val client = UpdateManifestClient(OkHttpClient.Builder().addInterceptor { chain ->
+            Response.Builder().request(chain.request()).protocol(Protocol.HTTP_1_1).code(200).message("OK")
+                .body(Gson().toJson(manifest).toResponseBody()).build()
+        }.build())
+        val repository = UpdateRepository(context, client, Gson())
+        assertTrue(repository.check(automatic = true))
+        assertEquals(UpdateStatus.AVAILABLE, repository.state.value.status)
+        assertEquals(-1L, prefs.getLong("downloadId", -1))
+        prefs.edit().clear().commit()
     }
 
     @Test fun invalidApkIsNeverHandedToInstaller() {

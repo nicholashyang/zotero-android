@@ -6,8 +6,8 @@ Install the first updater-enabled APK over the previous development installation
 subsequent updates can be downloaded from Settings → Software Update.
 
 Automatic checking is enabled by default, approximately once every 24 hours.
-Android may delay background work. Automatic downloads default to unmetered
-networks; manual downloads ask before using a metered connection. Installation
+Android may delay background work. New versions produce a notification (when permitted) and an in-app reminder. Downloads
+start only after a user action and ask before using a metered connection. Installation
 always starts with a user action and the Android package installer. On Android 8+
 the app can request permission to install packages; on Android 13+ notification
 permission is optional. The update screen remains available without notifications.
@@ -20,7 +20,7 @@ Update preferences are device preferences and survive signing out of Zotero.
    (default `codex/ios-inspired-ui`), base version, increasing Android version code,
    and notes. Inputs are passed through environment variables, never evaluated as
    shell commands. The checkout commit is pinned for the rest of the run.
-3. The workflow builds a previous version and the release candidate, runs unit
+3. The workflow downloads the previous publicly released APK and builds the release candidate, runs unit
    tests and Lint, and runs instrumented tests plus a data-retention upgrade check
    on API 23, 26, 33 and 36. A failed matrix job blocks publication.
 4. It creates `dev-v<base>-<code>` as a draft, uploads `Zotero-dev-debug.apk` and

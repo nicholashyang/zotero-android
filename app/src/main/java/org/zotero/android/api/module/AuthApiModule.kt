@@ -70,7 +70,6 @@ object AuthApiModule {
             .setNetworkTimeout(30L)
             .addInterceptor(zoteroApiHeadersNetworkInterceptor)
             .addInterceptor(userAgentHeaderNetworkInterceptor)
-            .addInterceptor(HttpLoggingInterceptor.createInterceptor(Level.BASIC))
             .build()
     }
 

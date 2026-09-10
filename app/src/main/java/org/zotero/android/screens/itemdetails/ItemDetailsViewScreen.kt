@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.MaterialTheme
+import org.zotero.android.uicomponents.math.MathText
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -56,7 +57,7 @@ private fun Title(
     viewState: ItemDetailsViewState,
 ) {
     SelectionContainer {
-        Text(
+        MathText(
             modifier = Modifier
                 .padding(horizontal = 4.dp, vertical = 8.dp),
             text = viewState.data.title,

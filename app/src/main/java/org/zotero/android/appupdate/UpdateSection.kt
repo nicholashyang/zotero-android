@@ -70,11 +70,6 @@ fun UpdatePanel(repository: UpdateRepository, onInstall: (() -> Unit)? = null, s
                 else scope.launch { repository.download() }
             },
             onInstall = onInstall ?: { UpdateActivity.open(context) },
-            onAutomatic = { enabled ->
-                repository.setAutomatic(enabled)
-                if (enabled && Build.VERSION.SDK_INT >= 33) notifications.launch(Manifest.permission.POST_NOTIFICATIONS)
-            },
-            onWifiOnly = repository::setWifiOnly,
             onNotifications = {
                 if (Build.VERSION.SDK_INT >= 33 &&
                     androidx.core.content.ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
@@ -113,8 +108,6 @@ fun UpdateSection(
     onCheck: () -> Unit = {},
     onDownload: () -> Unit = {},
     onInstall: () -> Unit = {},
-    onAutomatic: (Boolean) -> Unit = {},
-    onWifiOnly: (Boolean) -> Unit = {},
     onNotifications: () -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -168,23 +161,12 @@ fun UpdateSection(
         }
         if (BuildConfig.SELF_UPDATE_ENABLED) {
             LibraryDivider()
-            UpdateSwitch(stringResource(R.string.update_automatic), state.automatic, onAutomatic)
-            UpdateSwitch(stringResource(R.string.update_wifi_only), state.wifiOnly, onWifiOnly)
-            Text(stringResource(R.string.update_automatic_description), modifier = Modifier.padding(horizontal = 16.dp),
+            Text(stringResource(R.string.mobile_update_policy), modifier = Modifier.padding(16.dp),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             TextButton(onClick = onNotifications, modifier = Modifier.padding(horizontal = 8.dp)) {
                 Text(stringResource(R.string.update_notifications))
             }
         }
-    }
-}
-
-@Composable
-private fun UpdateSwitch(title: String, checked: Boolean, onChange: (Boolean) -> Unit) {
-    Row(Modifier.fillMaxWidth().toggleable(value = checked, role = Role.Switch, onValueChange = onChange)
-        .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(title, Modifier.weight(1f))
-        Switch(checked, onCheckedChange = null)
     }
 }
 

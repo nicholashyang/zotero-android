@@ -112,7 +112,7 @@ private val typography = Typography(
 /** Theme for the library shell; readers keep their own explicit AppThemeM3. */
 @Composable
 internal fun LibraryTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = org.zotero.android.preferences.appDarkTheme(),
     content: @Composable () -> Unit,
 ) {
     MaterialTheme(

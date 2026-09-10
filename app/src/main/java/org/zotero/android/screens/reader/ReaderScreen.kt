@@ -67,7 +67,7 @@ internal fun ReaderScreen(
     viewModel: ReaderViewModel = hiltViewModel(),
 ) {
     viewModel.initFileType()
-    viewModel.setOsTheme(isDark = isSystemInDarkTheme())
+    viewModel.setOsTheme(isDark = org.zotero.android.preferences.appDarkTheme())
     val viewState by viewModel.viewStates.observeAsState(ReaderViewState())
     val viewEffect by viewModel.viewEffects.observeAsState()
 

@@ -6,7 +6,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import org.zotero.android.preferences.*
+import org.zotero.android.uicomponents.library.SwipeReveal
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import org.zotero.android.screens.allitems.data.ItemCellModel
@@ -28,7 +30,10 @@ internal fun AllItemsTable(
     onAccessoryTapped: (key: String) -> Unit,
     onStartSync: () -> Unit,
     isFiltered: Boolean = false,
+    canSwipe: (String, SwipeAction) -> Boolean = { _, _ -> false },
+    onSwipe: (ItemCellModel, SwipeAction) -> Unit = { _, _ -> },
 ) {
+    val preferences by rememberAppPreferences().state.collectAsState()
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = onStartSync,
@@ -45,15 +50,20 @@ internal fun AllItemsTable(
                 items = itemCellModels, key = { _, item -> item.key }
             ) { index, item ->
                 LibraryGroupItem(first = index == 0, last = index == itemCellModels.lastIndex) {
+                    SwipeReveal(item.key,
+                        left = preferences.leftSwipe.takeIf { !isEditing && canSwipe(item.key, it) } ?: SwipeAction.NONE,
+                        right = preferences.rightSwipe.takeIf { !isEditing && canSwipe(item.key, it) } ?: SwipeAction.NONE,
+                        onAction = { onSwipe(item, it) }) { revealed, close ->
                     ItemRow(
                         cellModel = item,
                         itemAccessory = getItemAccessory(item.key),
                         isEditing = isEditing,
-                        onItemTapped = onItemTapped,
+                        onItemTapped = { if (revealed) close() else onItemTapped(it) },
                         onItemLongTapped = onItemLongTapped,
                         onAccessoryTapped = onAccessoryTapped,
                         isItemSelected = isItemSelected,
                     )
+                    }
                 }
             }
 

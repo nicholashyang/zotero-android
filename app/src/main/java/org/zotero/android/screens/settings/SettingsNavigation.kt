@@ -24,7 +24,7 @@ import org.zotero.android.uicomponents.singlepicker.SinglePickerScreen
 internal const val ARG_SETTINGS_CITE_SEARCH = "settingsCiteSearchArgs"
 
 @Composable
-internal fun SettingsNavigation(onOpenWebpage: (url: String) -> Unit) {
+internal fun SettingsNavigation(onOpenWebpage: (url: String) -> Unit, onClose: (() -> Unit)? = null) {
     val navController = rememberNavController()
     val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val navigation = remember(navController) {
@@ -34,16 +34,17 @@ internal fun SettingsNavigation(onOpenWebpage: (url: String) -> Unit) {
         navController = navController,
         startDestination = SettingsDestinations.SETTINGS,
     ) {
-        settingsNavScreens(navigation = navigation, onOpenWebpage = onOpenWebpage)
+        settingsNavScreens(navigation = navigation, onOpenWebpage = onOpenWebpage, onClose = onClose)
     }
 }
 
 internal fun NavGraphBuilder.settingsNavScreens(
     navigation: ZoteroNavigation,
-    onOpenWebpage: (url: String) -> Unit
+    onOpenWebpage: (url: String) -> Unit,
+    onClose: (() -> Unit)? = null,
 ) {
     settingsScreen(
-        onBack = navigation::onBack,
+        onBack = { if (onClose != null) onClose() else navigation.onBack() },
         onOpenWebpage = onOpenWebpage,
         toAccountScreen = navigation::toAccountScreen,
         toDebugScreen = navigation::toDebugScreen,

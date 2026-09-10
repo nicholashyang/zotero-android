@@ -104,7 +104,7 @@ val unspecified_scheme = ColorFamily(
 
 @Composable
 fun AppThemeM3(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = org.zotero.android.preferences.appDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
     content: @Composable() () -> Unit

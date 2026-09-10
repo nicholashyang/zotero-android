@@ -66,6 +66,10 @@ jobs:
                   match = re.fullmatch(r'dev-v[0-9]+\.[0-9]+\.[0-9]+-([0-9]+)', tag)
                   if match:
                       assert int(code) > int(match[1]), f'Build must exceed {tag}; drafts also reserve versions'
+          for existing in subprocess.check_output(['git', 'tag', '--list', 'dev-v*'], text=True).splitlines():
+              match = re.fullmatch(r'dev-v[0-9]+\.[0-9]+\.[0-9]+-([0-9]+)', existing)
+              if match:
+                  assert int(code) > int(match[1]), f'Build must exceed reserved tag {existing}'
           tag = f'dev-v{base}-{code}'
           with open(os.environ['GITHUB_ENV'], 'a') as out:
               out.write(f'RELEASE_TAG={tag}\nRELEASE_SHA=' + subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip() + '\n')
@@ -86,12 +90,13 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Prepare bundled assets
         run: bash scripts/prepare_dev_assets.sh
-      - name: Build previous version for upgrade checks
+      - name: Download previous published APK for upgrade checks
         run: |
           mkdir -p release-assets
-          bash gradlew --no-configuration-cache --max-workers=1 \
-            -PappBaseVersion="$BASE_VERSION" -PappVersionCode="$((VERSION_CODE - 1))" :app:assembleDevDebug
-          cp app/build/outputs/apk/dev/debug/app-dev-debug.apk release-assets/previous.apk
+          previous_tag=$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq .tag_name)
+          gh release download "$previous_tag" --repo "$GITHUB_REPOSITORY" \
+            --pattern Zotero-dev-debug.apk --output release-assets/previous.apk
+          echo "$previous_tag" > release-assets/previous-version.txt
       - name: Build and verify
         run: |
           bash gradlew --no-configuration-cache --max-workers=1 \
@@ -206,6 +211,6 @@ jobs:
         run: |
           set -euo pipefail
           gh release create "$RELEASE_TAG" --target "$RELEASE_SHA" --draft \
-            --title "Zotero Custom ${RELEASE_TAG#dev-v}" --notes-file release-assets/notes.txt \
+            --title "Zotero ${RELEASE_TAG#dev-v}" --notes-file release-assets/notes.txt \
             release-assets/Zotero-dev-debug.apk release-assets/update-dev.json
           gh release edit "$RELEASE_TAG" --draft=false --latest

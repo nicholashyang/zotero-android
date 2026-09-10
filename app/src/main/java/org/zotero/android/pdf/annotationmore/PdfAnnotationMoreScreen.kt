@@ -50,7 +50,7 @@ internal fun PdfAnnotationMoreScreen(
     LaunchedEffect(args) {
         viewModel.init(args = args)
     }
-    viewModel.setOsTheme(isDark = isSystemInDarkTheme())
+    viewModel.setOsTheme(isDark = org.zotero.android.preferences.appDarkTheme())
     val viewState by viewModel.viewStates.observeAsState(PdfAnnotationMoreViewState())
     val viewEffect by viewModel.viewEffects.observeAsState()
     AppThemeM3 {

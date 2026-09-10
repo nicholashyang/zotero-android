@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import org.zotero.android.uicomponents.math.MathText
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,10 +33,9 @@ internal fun RowScope.ItemRowTitleAndSubtitlePart(model: ItemCellModel) {
     Column(
         modifier = Modifier.weight(1f)
     ) {
-        Text(
+        MathText(
             text = model.title.ifEmpty { " " },
             maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.bodyLarge,
         )
@@ -67,6 +67,10 @@ internal fun RowScope.ItemRowTitleAndSubtitlePart(model: ItemCellModel) {
                     contentDescription = stringResource(Strings.item_detail_notes),
                 )
             }
+        }
+        if (model.abstract.isNotBlank()) {
+            Spacer(Modifier.height(6.dp))
+            MathText(model.abstract, MaterialTheme.colorScheme.onSurfaceVariant, MaterialTheme.typography.bodyMedium, maxLines = 3)
         }
         if (model.tagColors.isNotEmpty()) {
             FlowRow(

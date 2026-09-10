@@ -56,7 +56,8 @@ class UpdateRecoveryTest {
     private suspend fun queued(automatic: Boolean = false): UpdateRepository {
         val repository = repository()
         assertTrue(repository.check(automatic))
-        if (!automatic) repository.download()
+        repository.download()
+        if (automatic) preferences.edit().putBoolean("automaticDownload", true).commit()
         assertTrue("Download must be persisted", id >= 0)
         ownedIds.add(id)
         return repository
@@ -79,24 +80,24 @@ class UpdateRecoveryTest {
         assertEquals(original, id)
     }
 
-    @Test fun turningOffAutomaticCancelsAutomaticDownload(): Unit = runBlocking {
+    @Test fun migrationCancelsLegacyAutomaticDownload(): Unit = runBlocking {
         val repository = queued(automatic = true)
         val original = id
-        repository.setAutomatic(false)
+        repository.start()
         withTimeout(10_000) { while (id != -1L) delay(50) }
         downloads.query(DownloadManager.Query().setFilterById(original)).use { assertFalse(it.moveToFirst()) }
         assertEquals(UpdateStatus.AVAILABLE, repository.state.value.status)
     }
 
-    @Test fun turningOffAutomaticPreservesManualDownload(): Unit = runBlocking {
+    @Test fun migrationPreservesManualDownload(): Unit = runBlocking {
         val repository = queued()
         val original = id
-        repository.setAutomatic(false)
+        repository.start()
         delay(500)
         repository.refresh()
         assertEquals(original, id)
         downloads.query(DownloadManager.Query().setFilterById(original)).use { assertTrue(it.moveToFirst()) }
-        assertFalse(repository().state.value.automatic)
+        assertTrue(repository().state.value.automatic)
     }
 
     @Test fun removedDownloadReportsFailureAndCanBeRetried(): Unit = runBlocking {

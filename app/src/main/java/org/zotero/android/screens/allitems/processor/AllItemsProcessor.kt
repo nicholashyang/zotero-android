@@ -155,6 +155,16 @@ class AllItemsProcessor @Inject constructor(
         processResultsReset(results)
     }
 
+    fun reloadLibrary() {
+        resultsProcessorCoroutineScope?.cancel()
+        itemAccessories.clear()
+        mutableDownloadingAcessories.clear()
+        attachmentToOpen = null
+        downloadBatchData = null
+        onSearchStateFlow.value = ""
+        processResultsReset(results(searchText = null, filters = emptyList(), sortType = sortType))
+    }
+
     private fun setupFlowListeners() {
         setupSearchStateFlow()
         setupOnAttachmentFileDeletedStateFlow()

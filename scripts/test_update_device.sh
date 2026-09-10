@@ -36,7 +36,7 @@ grep -q "versionCode=$expected_code " device-results/package.txt
 grep -q retained device-results/upgrade-marker.txt
 install_apk "$test_apk"
 "$adb_bin" -s "$serial" shell am instrument -w \
-  -e class org.zotero.android.library.AppUpdateTest,org.zotero.android.library.LibraryInteractionTest,org.zotero.android.library.LibraryScreenshotTest \
+  -e class org.zotero.android.library.AppUpdateTest,org.zotero.android.library.LibraryInteractionTest,org.zotero.android.library.LibraryScreenshotTest,org.zotero.android.library.MobileUiTest \
   org.zotero.android.debug.test/org.zotero.android.library.LibraryTestRunner | tee device-results/instrumentation.txt
 grep -qE '^OK \([0-9]+ tests?\)' device-results/instrumentation.txt
 # Root is limited to test orchestration on this isolated emulator. Instrumentation

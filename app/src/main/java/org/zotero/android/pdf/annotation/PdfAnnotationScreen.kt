@@ -56,7 +56,7 @@ internal fun PdfAnnotationScreen(
         viewModel.init(args = args, isTablet = isTablet)
     }
 
-    viewModel.setOsTheme(isDark = isSystemInDarkTheme())
+    viewModel.setOsTheme(isDark = org.zotero.android.preferences.appDarkTheme())
     val viewState by viewModel.viewStates.observeAsState(PdfAnnotationViewState())
     val viewEffect by viewModel.viewEffects.observeAsState()
     AppThemeM3 {
