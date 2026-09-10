@@ -12,7 +12,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import org.zotero.android.screens.dashboard.BuildInfo
+import org.zotero.android.appupdate.AppUpdateState
+import org.zotero.android.appupdate.UpdateSection
+import org.zotero.android.appupdate.UpdatePanel
 import org.zotero.android.uicomponents.Strings
 import org.zotero.android.uicomponents.library.LibraryDivider
 import org.zotero.android.uicomponents.library.LibraryGroup
@@ -59,6 +61,7 @@ internal fun SettingsScreen(
             toDebugScreen = toDebugScreen,
             openSupport = viewModel::openSupportAndFeedback,
             openPrivacyPolicy = viewModel::openPrivacyPolicy,
+            updateContent = { UpdatePanel(viewModel.updates, standalone = false) },
         )
     }
 }
@@ -71,6 +74,7 @@ internal fun SettingsContent(
     toDebugScreen: () -> Unit,
     openSupport: () -> Unit,
     openPrivacyPolicy: () -> Unit,
+    updateContent: @Composable () -> Unit = { UpdateSection(AppUpdateState()) },
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -101,6 +105,6 @@ internal fun SettingsContent(
                 LibraryRow(stringResource(Strings.privacy_policy), openPrivacyPolicy)
             }
         }
-        item { BuildInfo() }
+        item { updateContent() }
     }
 }

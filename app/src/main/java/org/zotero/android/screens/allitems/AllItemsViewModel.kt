@@ -129,6 +129,7 @@ internal class AllItemsViewModel @Inject constructor(
     private val dispatchers: Dispatchers,
     private val navigationParamsMarshaller: NavigationParamsMarshaller,
     private val updateSuggestionUseCase: UpdateSuggestionUseCase,
+    val appUpdates: org.zotero.android.appupdate.UpdateRepository,
     private val createAttachmentsDbRequestFactory: CreateAttachmentsDbRequest.Factory,
     private val defaults: Defaults,
 ) : BaseViewModel2<AllItemsViewState, AllItemsViewEffect>(AllItemsViewState()),
@@ -239,6 +240,7 @@ internal class AllItemsViewModel @Inject constructor(
     }
 
     private fun maybeShowAppUpdateDialog() {
+        if (org.zotero.android.BuildConfig.SELF_UPDATE_ENABLED) return
         val doNotShowAppUpdateBannerBeforeTime = defaults.getDoNotShowAppUpdateBannerBeforeTime()
 
         if (updateSuggestionUseCase.wasDownloadedFromGooglePlayStore()

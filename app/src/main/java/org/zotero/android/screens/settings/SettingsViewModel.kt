@@ -8,6 +8,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class SettingsViewModel @Inject constructor(
+    val updates: org.zotero.android.appupdate.UpdateRepository,
 ) : BaseViewModel2<SettingsViewState, SettingsViewEffect>(SettingsViewState()) {
 
     fun init() = initOnce {

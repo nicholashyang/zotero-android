@@ -34,8 +34,15 @@ android {
         applicationId = BuildConfig.appId
         minSdk = BuildConfig.minSdkVersion
         targetSdk = BuildConfig.targetSdk
-        versionCode = BuildConfig.versionCode
-        versionName = BuildConfig.version.name
+        versionCode = providers.gradleProperty("appVersionCode").orNull?.toInt()
+            ?: BuildConfig.versionCode
+        require(versionCode!! in 1..2100000000)
+        val baseVersion = providers.gradleProperty("appBaseVersion").getOrElse(
+            "${BuildConfig.version.major}.${BuildConfig.version.minor}.${BuildConfig.version.patch}"
+        )
+        require(baseVersion.matches(Regex("[0-9]+\\.[0-9]+\\.[0-9]+")))
+        versionName = "$baseVersion-$versionCode"
+        buildConfigField("boolean", "SELF_UPDATE_ENABLED", "false")
         testInstrumentationRunner = providers.gradleProperty("uiTestRunner")
             .getOrElse(Libs.androidJUnitRunner)
 
@@ -108,6 +115,7 @@ android {
     setDefaultProductFlavors()
     productFlavors {
         dev {
+            buildConfigField("boolean", "SELF_UPDATE_ENABLED", "true")
             resValue("string", "app_name", """"Zotero Debug""")
             buildConfigField("String", "PSPDFKIT_KEY", readPspdfkitKey())
             applicationIdSuffix = ".debug"
@@ -149,6 +157,7 @@ play {
 }
 
 dependencies {
+    implementation("androidx.work:work-runtime-ktx:2.11.2")
 
     //Material design
     implementation(Libs.materialDesign)

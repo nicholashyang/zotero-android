@@ -113,6 +113,25 @@ class LibraryScreenshotTest {
         }
     }
 
+    @Test fun updateLight() = capture("update-light") { UpdateExample() }
+    @Test fun updateDark() = capture("update-dark", dark = true) { UpdateExample() }
+    @Test fun updateLargeText() = capture("update-large-text", fontScale = 2f) { UpdateExample() }
+
+    @Composable
+    private fun UpdateExample() {
+        org.zotero.android.appupdate.UpdateSection(
+            org.zotero.android.appupdate.AppUpdateState(
+                status = org.zotero.android.appupdate.UpdateStatus.READY,
+                manifest = org.zotero.android.appupdate.AppUpdateManifest(
+                    282, "1.0.0-282", "org.zotero.android.debug", "devDebug", 23,
+                    190795550, "a".repeat(64),
+                    "https://github.com/nicholashyang/zotero-android/releases/download/dev-v1.0.0-282/Zotero-dev-debug.apk",
+                    "Version information and reliable background downloads.",
+                ),
+            ),
+        )
+    }
+
     @Test fun librariesLight() = capture("libraries-light") {
         val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
         LibraryScaffold(topBar = { LibrariesTopBar(scroll, {}) }, scrollBehavior = scroll) {

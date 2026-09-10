@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <!-- Only the new updater has Chinese translations. The rest of the existing
+         app deliberately falls back to its English defaults. Preserve all other
+         translation findings and all correctness/security checks. -->
+    <issue id="MissingTranslation">
+        <ignore regexp='is not translated in &quot;zh&quot; \(Chinese\)$' />
+    </issue>
+</lint>

@@ -49,6 +49,9 @@ open class ZoteroApplication: Application(), DefaultLifecycleObserver {
     @ForGsonWithRoundedDecimals
     lateinit var gsonWithRoundedDecimals: Gson
 
+    @Inject
+    lateinit var appUpdates: org.zotero.android.appupdate.UpdateRepository
+
     companion object {
         lateinit var instance: ZoteroApplication
     }
@@ -62,6 +65,7 @@ open class ZoteroApplication: Application(), DefaultLifecycleObserver {
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
         initializePspdfKit()
+        appUpdates.start()
     }
 
     private fun initializePspdfKit() {
@@ -87,6 +91,7 @@ open class ZoteroApplication: Application(), DefaultLifecycleObserver {
 
     override fun onStart(owner: LifecycleOwner) {
         controllers.willEnterForeground()
+        appUpdates.start()
     }
 
     override fun onStop(owner: LifecycleOwner) {

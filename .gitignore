@@ -81,3 +81,7 @@ app/src/main/assets/cslLocales/
 app/src/main/assets/reader/
 # Local development toolchain and reports
 .local/
+.kotlin/
+/device-results/
+/release-assets/
+__pycache__/

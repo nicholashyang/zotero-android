@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The updater is localized in English and Chinese; other locales use English. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en" tools:ignore="MissingTranslation">
+    <string name="update_title">Software Update</string>
+    <string name="update_current_version">Current version: %1$s (build %2$d)</string>
+    <string name="update_last_checked">Last checked: %1$s</string>
+    <string name="update_never">Never</string>
+    <string name="update_idle">Check for a new version.</string>
+    <string name="update_checking">Checking for updates…</string>
+    <string name="update_up_to_date">You are up to date.</string>
+    <string name="update_no_release">No update has been published yet.</string>
+    <string name="update_available">A new version is available.</string>
+    <string name="update_waiting">Waiting for network or download conditions…</string>
+    <string name="update_downloading">Downloading update…</string>
+    <string name="update_verifying">Verifying installation package…</string>
+    <string name="update_ready">Update ready to install</string>
+    <string name="update_ready_version">Zotero %1$s has been downloaded. Tap to review and install.</string>
+    <string name="update_error_network">Could not check for updates. Check your connection and retry.</string>
+    <string name="update_error_manifest">The update information is invalid. Try checking again later.</string>
+    <string name="update_error_incompatible">This update is not compatible with this app or Android version.</string>
+    <string name="update_error_space">There is not enough storage for this update. Free up space and retry.</string>
+    <string name="update_error_verification">Package verification failed. Download the update again.</string>
+    <string name="update_error_install">Could not open the installer. Check installation permissions and retry.</string>
+    <string name="update_error_download">Download failed. Check your connection and retry.</string>
+    <string name="update_check">Check for Updates</string>
+    <string name="update_download">Download Update</string>
+    <string name="update_install">Install Update</string>
+    <string name="update_automatic">Automatic Updates</string>
+    <string name="update_wifi_only">Download automatically on Wi-Fi only</string>
+    <string name="update_automatic_description">Checks about once a day. Wi-Fi only means an unmetered network. Installation always needs your confirmation.</string>
+    <string name="update_notifications">Enable update notifications</string>
+    <string name="update_mobile_title">Download using mobile data?</string>
+    <string name="update_mobile_message">This network may charge for data. The update is %1$s.</string>
+    <string name="update_later">Remind Me Later</string>
+</resources>

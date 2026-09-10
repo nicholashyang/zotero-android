@@ -1,0 +1,209 @@
+name: Publish development update
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: Branch or commit to release
+        default: codex/ios-inspired-ui
+        required: true
+        type: string
+      base_version:
+        description: Base version (major.minor.patch)
+        default: '1.0.0'
+        required: true
+        type: string
+      version_code:
+        description: Increasing Android version code
+        required: true
+        type: string
+      notes:
+        description: Release notes shown in the app
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-development-update
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.repository == 'nicholashyang/zotero-android'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      sha: ${{ steps.source.outputs.sha }}
+      tag: ${{ steps.source.outputs.tag }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BASE_VERSION: ${{ inputs.base_version }}
+      VERSION_CODE: ${{ inputs.version_code }}
+      RELEASE_NOTES: ${{ inputs.notes }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.source_ref }}
+          submodules: recursive
+          fetch-depth: 0
+      - name: Validate release inputs and previous version
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, re, subprocess
+          base, code = os.environ['BASE_VERSION'], os.environ['VERSION_CODE']
+          assert re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+', base), 'Invalid base version'
+          assert re.fullmatch(r'[0-9]+', code) and 280 < int(code) <= 2100000000, 'Invalid version code'
+          assert len(os.environ['RELEASE_NOTES']) <= 16000, 'Release notes are too long'
+          repo = os.environ['GITHUB_REPOSITORY']
+          releases = json.loads(subprocess.check_output(['gh', 'api', '--paginate', '--slurp', f'repos/{repo}/releases?per_page=100']))
+          for page in releases:
+              for release in page:
+                  tag = release['tag_name']
+                  match = re.fullmatch(r'dev-v[0-9]+\.[0-9]+\.[0-9]+-([0-9]+)', tag)
+                  if match:
+                      assert int(code) > int(match[1]), f'Build must exceed {tag}; drafts also reserve versions'
+          tag = f'dev-v{base}-{code}'
+          with open(os.environ['GITHUB_ENV'], 'a') as out:
+              out.write(f'RELEASE_TAG={tag}\nRELEASE_SHA=' + subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip() + '\n')
+          PY
+      - name: Pin source
+        id: source
+        run: |
+          echo "sha=$RELEASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.10'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Prepare bundled assets
+        run: bash scripts/prepare_dev_assets.sh
+      - name: Build previous version for upgrade checks
+        run: |
+          mkdir -p release-assets
+          bash gradlew --no-configuration-cache --max-workers=1 \
+            -PappBaseVersion="$BASE_VERSION" -PappVersionCode="$((VERSION_CODE - 1))" :app:assembleDevDebug
+          cp app/build/outputs/apk/dev/debug/app-dev-debug.apk release-assets/previous.apk
+      - name: Build and verify
+        run: |
+          bash gradlew --no-configuration-cache --max-workers=1 \
+            -PappBaseVersion="$BASE_VERSION" -PappVersionCode="$VERSION_CODE" \
+            -PuiTestRunner=org.zotero.android.library.LibraryTestRunner \
+            :app:assembleDevDebug :app:testDevDebugUnitTest :app:lintDevDebug :app:assembleDevDebugAndroidTest
+      - name: Prepare release assets
+        run: |
+          mkdir -p release-assets
+          cp app/build/outputs/apk/dev/debug/app-dev-debug.apk release-assets/Zotero-dev-debug.apk
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          Path('release-assets/notes.txt').write_text(os.environ['RELEASE_NOTES'])
+          PY
+          python3 scripts/create_update_manifest.py \
+            --apk release-assets/Zotero-dev-debug.apk \
+            --aapt "$ANDROID_HOME/build-tools/36.0.0/aapt" \
+            --tag "$RELEASE_TAG" --notes release-assets/notes.txt \
+            --output release-assets/update-dev.json
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose release-assets/Zotero-dev-debug.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: development-release-assets
+          path: release-assets/
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: development-test-apk
+          path: app/build/outputs/apk/androidTest/dev/debug/*.apk
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-validation
+          path: |
+            release-assets/update-dev.json
+            app/build/reports/
+
+  device-tests:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - api: 23
+            arch: x86
+            target: default
+          - api: 26
+            arch: x86_64
+            target: default
+          - api: 33
+            arch: x86_64
+            target: google_apis
+          - api: 36
+            arch: x86_64
+            target: google_apis
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.build.outputs.sha }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: development-release-assets
+          path: release-assets
+      - uses: actions/download-artifact@v4
+        with:
+          name: development-test-apk
+          path: test-apk
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api }}
+          arch: ${{ matrix.arch }}
+          target: ${{ matrix.target }}
+          disable-animations: true
+          script: bash scripts/test_update_device.sh release-assets/previous.apk release-assets/Zotero-dev-debug.apk test-apk/app-dev-debug-androidTest.apk
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: device-results-api-${{ matrix.api }}
+          path: device-results/
+
+  publish:
+    needs: [build, device-tests]
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RELEASE_TAG: ${{ needs.build.outputs.tag }}
+      RELEASE_SHA: ${{ needs.build.outputs.sha }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: development-release-assets
+          path: release-assets
+      - name: Publish complete validated release
+        run: |
+          set -euo pipefail
+          gh release create "$RELEASE_TAG" --target "$RELEASE_SHA" --draft \
+            --title "Zotero Custom ${RELEASE_TAG#dev-v}" --notes-file release-assets/notes.txt \
+            release-assets/Zotero-dev-debug.apk release-assets/update-dev.json
+          gh release edit "$RELEASE_TAG" --draft=false --latest

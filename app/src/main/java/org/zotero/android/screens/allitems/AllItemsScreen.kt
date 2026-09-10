@@ -198,6 +198,9 @@ internal fun AllItemsScreen(
                 isFiltered = !viewState.searchTerm.isNullOrBlank() || viewState.filters.isNotEmpty(),
             )
 
+            if (org.zotero.android.BuildConfig.SELF_UPDATE_ENABLED) {
+                org.zotero.android.appupdate.UpdateHomeBanner(viewModel.appUpdates)
+            }
             MaybeShowAppUpdateBanner(
                 appUpdateBannerPayload = viewState.appUpdateBannerPayload,
                 shouldShowAppUpdateBanner = viewState.shouldShowAppUpdateBanner,
