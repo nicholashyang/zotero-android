@@ -8,12 +8,20 @@ adb_bin="${ANDROID_HOME:?}/platform-tools/adb"
 serial="${ANDROID_SERIAL:-emulator-${EMULATOR_PORT:-5554}}"
 case "$serial" in emulator-*) ;; *) echo 'An isolated emulator is required' >&2; exit 1;; esac
 mkdir -p device-results
-"$adb_bin" -s "$serial" install -r "$previous_apk"
+install_apk() {
+  # Old PackageManager versions can report failure while adb exits successfully.
+  "$adb_bin" -s "$serial" install -r "$1" | tee device-results/install.txt
+  grep -q '^Success' device-results/install.txt
+}
+install_apk "$previous_apk"
 "$adb_bin" -s "$serial" shell "run-as org.zotero.android.debug sh -c 'echo retained > files-upgrade-marker'"
-"$adb_bin" -s "$serial" install -r "$new_apk"
+install_apk "$new_apk"
+expected_code=$("$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$new_apk" | sed -n "s/^package:.*versionCode='\([0-9]*\)'.*/\1/p")
+"$adb_bin" -s "$serial" shell dumpsys package org.zotero.android.debug > device-results/package.txt
+grep -q "versionCode=$expected_code " device-results/package.txt
 "$adb_bin" -s "$serial" shell run-as org.zotero.android.debug cat files-upgrade-marker > device-results/upgrade-marker.txt
 grep -q retained device-results/upgrade-marker.txt
-"$adb_bin" -s "$serial" install -r "$test_apk"
+install_apk "$test_apk"
 "$adb_bin" -s "$serial" shell am instrument -w \
   -e class org.zotero.android.library.AppUpdateTest,org.zotero.android.library.LibraryInteractionTest,org.zotero.android.library.LibraryScreenshotTest \
   org.zotero.android.debug.test/org.zotero.android.library.LibraryTestRunner | tee device-results/instrumentation.txt

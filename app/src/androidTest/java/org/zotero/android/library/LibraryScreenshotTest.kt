@@ -1,6 +1,7 @@
 package org.zotero.android.library
 
 import android.graphics.Bitmap
+import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -79,7 +80,14 @@ class LibraryScreenshotTest {
         val target = File(compose.activity.filesDir, "ui-screenshots/$name.png")
         target.parentFile!!.mkdirs()
         target.outputStream().use {
-            compose.onRoot().captureToImage().asAndroidBitmap().compress(Bitmap.CompressFormat.PNG, 100, it)
+            val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                compose.onRoot().captureToImage().asAndroidBitmap()
+            } else {
+                // Compose capture uses PixelCopy, which is unavailable on API 23.
+                checkNotNull(InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot())
+            }
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+            bitmap.recycle()
         }
     }
 

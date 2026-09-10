@@ -37,6 +37,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import org.junit.Before
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -59,6 +61,11 @@ class LibraryInteractionTest {
     @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
 
     private fun text(id: Int) = compose.activity.getString(id)
+
+    @Before fun useTouchInput() {
+        // Older emulators start in keyboard mode and automatically refocus the first field.
+        InstrumentationRegistry.getInstrumentation().setInTouchMode(true)
+    }
 
     @Test fun searchClearAndCancelUpdateTheSameQuery() {
         var query by mutableStateOf("")
