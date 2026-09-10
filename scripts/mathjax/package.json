@@ -1,0 +1,14 @@
+{
+  "name": "zotero-offline-math",
+  "private": true,
+  "pnpm": { "ignoredBuiltDependencies": ["core-js-bundle"] },
+  "scripts": { "build": "node build.cjs" },
+  "devDependencies": {
+    "@babel/core": "7.26.9",
+    "@babel/preset-env": "7.26.9",
+    "acorn": "8.14.1",
+    "core-js-bundle": "3.41.0",
+    "mathjax": "3.2.2",
+    "terser": "5.39.0"
+  }
+}

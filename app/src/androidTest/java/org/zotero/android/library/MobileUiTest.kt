@@ -1,11 +1,14 @@
 package org.zotero.android.library
 
 import android.graphics.Bitmap
+import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
@@ -42,9 +45,14 @@ class MobileUiTest {
     @After fun restore() { AppPreferences.get(compose.activity).apply { appearance(original.appearance); swipe(true, original.leftSwipe); swipe(false, original.rightSwipe) } }
     private fun text(id: Int) = compose.activity.getString(id)
     private fun screenshot(name: String) {
-        val bitmap = compose.onRoot().captureToImage().asAndroidBitmap()
+        val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            compose.onRoot().captureToImage().asAndroidBitmap()
+        } else {
+            checkNotNull(InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot())
+        }
         val dir = File(compose.activity.filesDir, "ui-screenshots").apply { mkdirs() }
         File(dir, "mobile-$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        bitmap.recycle()
     }
     @Test fun loginFormSupportsSubmitAndClearsPassword() {
         var submitted: Pair<String, String>? = null
@@ -127,6 +135,53 @@ class MobileUiTest {
     }
     @Test fun mathRendersOfflineInLightMode() { mathFixture(false, 1f, "math-light") }
     @Test fun mathRendersOfflineInDarkModeWithLargeText() { mathFixture(true, 2f, "math-dark-large") }
+    private fun webViews(view: View): List<WebView> = when (view) {
+        is WebView -> listOf(view)
+        is ViewGroup -> (0 until view.childCount).flatMap { webViews(view.getChildAt(it)) }
+        else -> emptyList()
+    }
+    private fun awaitWebCondition(script: String) {
+        var matched = false
+        val deadline = System.currentTimeMillis() + 25000
+        while (!matched && System.currentTimeMillis() < deadline) {
+            val latch = CountDownLatch(1)
+            compose.runOnIdle {
+                val view = webViews(compose.activity.window.decorView).firstOrNull()
+                if (view == null) latch.countDown() else view.evaluateJavascript(script) {
+                    matched = it == "true"; latch.countDown()
+                }
+            }
+            latch.await(2, TimeUnit.SECONDS)
+            if (!matched) Thread.sleep(100)
+        }
+        assertTrue("Offline formula condition failed: $script", matched)
+    }
+    @Test fun fullWidthFormulaScrollsAndInvalidTexShowsSource() {
+        val equation = (1..40).joinToString("+") { "x_{$it}" }
+        compose.setContent { LibraryTheme { Surface {
+            MathText("\\[$equation\\] \\(\\unknownZoteroCommand\\)", MaterialTheme.colorScheme.onSurface,
+                MaterialTheme.typography.bodyLarge, Modifier.padding(16.dp))
+        } } }
+        awaitWebCondition("(function(){var b=document.querySelector('.block');return !!b && b.scrollWidth>b.clientWidth && document.body.textContent.indexOf('unknownZoteroCommand')>=0})()")
+        awaitWebCondition("(function(){var b=document.querySelector('.block');b.scrollLeft=60;return b.scrollLeft>0})()")
+    }
+    @Test fun twoHundredFormulaRowsCanScrollWithBoundedAttachedWebViews() {
+        compose.setContent { LibraryTheme { Surface {
+            LazyColumn(Modifier.testTag("formula-list")) {
+                items((0 until 200).toList(), key = { it }) { index ->
+                    MathText("Paper $index: \\(E=mc^2\\)", MaterialTheme.colorScheme.onSurface,
+                        MaterialTheme.typography.bodyLarge, Modifier.fillMaxWidth().heightIn(min = 90.dp).padding(12.dp), maxLines = 2)
+                }
+            }
+        } } }
+        awaitWebCondition("document.querySelectorAll('mjx-container svg').length > 0")
+        for (index in listOf(30, 60, 100, 150, 199, 0)) {
+            compose.onNodeWithTag("formula-list").performScrollToIndex(index)
+            compose.waitForIdle()
+            compose.runOnIdle { assertTrue(webViews(compose.activity.window.decorView).size in 1..20) }
+        }
+        awaitWebCondition("document.querySelectorAll('mjx-container svg').length > 0")
+    }
     private fun mathFixture(dark: Boolean, scale: Float, name: String) {
         compose.setContent {
             CompositionLocalProvider(LocalDensity provides Density(LocalDensity.current.density, scale)) {

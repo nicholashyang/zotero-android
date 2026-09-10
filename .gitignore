@@ -85,3 +85,4 @@ app/src/main/assets/reader/
 /device-results/
 /release-assets/
 __pycache__/
+/scripts/mathjax/node_modules/

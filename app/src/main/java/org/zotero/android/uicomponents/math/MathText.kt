@@ -116,7 +116,7 @@ private fun mathPage(segments: List<MathSegment>, cached: String?, font: Float, 
     }) } }.toString().replace("<", "\\u003c").replace(">", "\\u003e")
     return """<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://appassets.androidplatform.net; style-src 'unsafe-inline'; img-src 'none'; connect-src 'none'">
-<style>html,body{margin:0;padding:0;background:transparent;color:$color;font:${font}px/1.5 sans-serif;overflow-wrap:anywhere}#content{width:100%}.math{display:inline-block;max-width:100%;vertical-align:baseline}.block{display:block;overflow-x:auto;overflow-y:hidden;padding:4px 0}mjx-container{margin:0!important}svg{max-width:100%}#content>span{white-space:pre-wrap}</style>
+<style>html,body{margin:0;padding:0;background:transparent;color:$color;font:${font}px/1.5 sans-serif;overflow-wrap:anywhere}#content{width:100%}.math{display:inline-block;max-width:100%;vertical-align:baseline}.block{display:block;overflow-x:auto;overflow-y:hidden;padding:4px 0}mjx-container{margin:0!important}svg{max-width:100%}.block svg{max-width:none}#content>span{white-space:pre-wrap}</style>
 <script>window.MathJax={startup:{typeset:false},tex:{packages:['base','ams'],maxBuffer:10000,maxMacros:1000},svg:{fontCache:'none'},options:{enableMenu:false}};</script>
 ${if (cached == null) "<script src=\"${ORIGIN}tex-svg.js\"></script>" else ""}
 </head><body><div id="content"></div><script>

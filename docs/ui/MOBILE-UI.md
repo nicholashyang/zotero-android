@@ -14,7 +14,7 @@ Automatic updates now mean **check and notify**. Downloads require a tap and ins
 
 ## Verification
 
-The local development APK and 71 JVM tests passed during implementation. Dedicated emulator tests cover form submission, busy-state behavior, theme and gesture preferences, phone/tablet header callbacks, action reveal, gesture conflicts and actual offline MathJax SVG output. Screenshots are inspected in both light mode and 200% dark text mode. The release device matrix additionally runs the existing interaction/screenshot/update tests on API 23, 26, 33 and 36.
+The local development APK and 71 JVM tests passed during implementation. Dedicated emulator tests cover form submission, busy-state behavior, theme and gesture preferences, phone/tablet header callbacks, action reveal, gesture conflicts, actual offline MathJax SVG output, long-formula scrolling, invalid-TeX fallback and 200-row list scrolling with bounded attached WebViews. Screenshots are inspected in both light mode and 200% dark text mode. The release device matrix additionally runs the existing interaction/screenshot/update tests on API 23, 26, 33 and 36. The checked-in MathJax asset is transpiled to ES5 with offline core-js polyfills for the original API 23 WebView; its reproducible build is in `scripts/mathjax`.
 
 Release-specific acceptance results are recorded in `docs/RELEASE-1.0.0-282.md` after publication. The project retains its existing Lint baseline; successful Lint execution is not a zero-error claim. No account database or real cloud library is used by the fixture tests. Full authenticated library switching/sync, password-manager integration across vendors and screen-reader behavior still require account/device acceptance.
 

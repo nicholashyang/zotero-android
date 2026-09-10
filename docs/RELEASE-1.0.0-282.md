@@ -6,11 +6,13 @@ This release updates the mobile sign-in, library home, preferences, gestures and
 
 - Development APK built with version code 282 and the existing development certificate.
 - 71 JVM tests passed with no failures or skips.
-- The API 35 phone fixture passed 40 UI/update tests and four offline DownloadManager recovery tests.
+- The API 35 phone fixture passed 42 UI/update tests and four offline DownloadManager recovery tests.
 - The actual public 281 APK was installed and upgraded to the candidate 282 APK. The private data marker survived.
 - The tablet-size API 35 fixture passed all 10 mobile UI checks after the legacy WebView compatibility adjustment.
 - Both legacy automatic-download cancellation and preservation of manual transfers passed.
 - Screenshots verified that offline MathJax emits SVG and does not duplicate assistive text. The gesture gutter is tested independently from card actions.
+- Long detail formulas scroll horizontally, invalid TeX falls back to source, and a 200-row formula list scrolls with a bounded number of attached WebViews.
+- The initial release attempt was correctly blocked on API 23. The compatibility fix transpiles all bundled MathJax dependencies to validated ES5, includes offline runtime polyfills, and uses Android's older screenshot API below API 26.
 - Lint ran successfully and retains the existing baseline of 571 errors and one fatal finding. New feature classes did not introduce error/fatal findings; this is not a clean-Lint claim.
 
 The published workflow is required to pass the same device checks on API 23, 26, 33 and 36 before publishing. Public artifact and workflow results are appended after publication.
