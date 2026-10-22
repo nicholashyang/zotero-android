@@ -39,9 +39,11 @@ private tailrec fun Context.activity(): Activity? = when (this) {
 internal fun ProvideAdaptiveWindow(content: @Composable () -> Unit) {
     val activity = LocalContext.current.activity()
     if (LocalWindowTracking.current || activity == null) { content(); return }
-    val flow = remember(activity) { WindowInfoTracker.getOrCreate(activity).windowLayoutInfo(activity) }
-    val info by flow.collectAsStateWithLifecycle(initialValue = WindowLayoutInfo(emptyList()))
-    val feature = info.displayFeatures.filterIsInstance<FoldingFeature>().firstOrNull {
+    val flow: kotlinx.coroutines.flow.Flow<WindowLayoutInfo?> = remember(activity) {
+        WindowInfoTracker.getOrCreate(activity).windowLayoutInfo(activity)
+    }
+    val info by flow.collectAsStateWithLifecycle(initialValue = null)
+    val feature = info?.displayFeatures.orEmpty().filterIsInstance<FoldingFeature>().firstOrNull {
         it.isSeparating || it.occlusionType == FoldingFeature.OcclusionType.FULL
     }
     val fold = feature?.let {

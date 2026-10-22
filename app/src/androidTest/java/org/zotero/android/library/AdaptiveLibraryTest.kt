@@ -11,7 +11,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -119,11 +119,11 @@ class AdaptiveLibraryTest {
     @Test fun darkHomePreview() = capture("home-dark", true) { NativeHomeExample() }
     @Test fun separatingHingePreview() = capture("home-hinge") {
         val density = LocalDensity.current.density
-        val config = LocalConfiguration.current
-        val center = (config.screenWidthDp * density / 2).toInt()
+        val window = LocalWindowInfo.current.containerSize
+        val center = window.width / 2
         CompositionLocalProvider(LocalWindowFold provides WindowFold(
             PaneBounds(center - (8*density).toInt(), 0, center + (8*density).toInt(),
-                (config.screenHeightDp*density).toInt()), FoldAxis.VERTICAL)) {
+                window.height), FoldAxis.VERTICAL)) {
             NativeHomeExample()
         }
     }
