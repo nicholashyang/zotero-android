@@ -27,6 +27,7 @@ import org.zotero.android.architecture.LCE2
 import org.zotero.android.architecture.coroutines.Dispatchers
 import org.zotero.android.attachmentdownloader.AttachmentDownloader
 import org.zotero.android.attachmentdownloader.AttachmentDownloaderEventStream
+import org.zotero.android.covers.ItemCoverSource
 import org.zotero.android.database.DbWrapperMain
 import org.zotero.android.database.objects.Attachment
 import org.zotero.android.database.objects.RItem
@@ -130,7 +131,6 @@ class AllItemsProcessor @Inject constructor(
 
     private fun setupOnAttachmentFileDeletedStateFlow() {
         onAttachmentFileDeletedEventStream.flow()
-            .debounce(100)
             .map {
                     resultsProcessorCoroutineScope?.launch {
                         limitedParallelismSemaphoreForWork.withPermit {
@@ -391,7 +391,10 @@ class AllItemsProcessor @Inject constructor(
         val index = mutableItemCellModels.indexOfFirst { it.key == updateKey }
         if (index != -1) {
             mutableItemCellModels[index] =
-                mutableItemCellModels[index].updateAccessory(cellAccessory)
+                mutableItemCellModels[index].copy(
+                    accessory = cellAccessory,
+                    cover = coverSource(itemAccessories[updateKey]?.attachmentGet),
+                )
         }
     }
 
@@ -407,7 +410,7 @@ class AllItemsProcessor @Inject constructor(
             item = item,
             accessory = cellAccessory(accessory),
             typeName = typeName
-        )
+        ).copy(cover = coverSource(accessory?.attachmentGet))
         val indexToReplace = itemCellModelsToUpdate.indexOfFirst { it.key == cellModel.key }
         if (!coroutineContext.isActive) {
             return
@@ -581,6 +584,8 @@ class AllItemsProcessor @Inject constructor(
                     val itemAccessory = accessory(item)
                     if (itemAccessory != null) {
                         this@AllItemsProcessor.itemAccessories.put(item.key, itemAccessory)
+                    } else {
+                        this@AllItemsProcessor.itemAccessories.remove(item.key)
                     }
                     if (!isActive) {
                         return@launch
@@ -606,6 +611,8 @@ class AllItemsProcessor @Inject constructor(
                     val itemAccessory = accessory(item)
                     if (itemAccessory != null) {
                         this@AllItemsProcessor.itemAccessories.put(item.key, itemAccessory)
+                    } else {
+                        this@AllItemsProcessor.itemAccessories.remove(item.key)
                     }
                     if (!isActive) {
                         return@launch
@@ -649,6 +656,14 @@ class AllItemsProcessor @Inject constructor(
         }
 
         return null
+    }
+
+    private fun coverSource(attachment: Attachment?): ItemCoverSource? {
+        val type = attachment?.type as? Attachment.Kind.file ?: return null
+        if (type.location != Attachment.FileLocation.local &&
+            type.location != Attachment.FileLocation.localAndChangedRemotely) return null
+        val file = fileStore.attachmentFile(attachment.libraryId, attachment.key, type.filename)
+        return ItemCoverSource.fromFile(file, type.contentType)
     }
 
     private fun cellAccessory(accessory: ItemAccessory?): ItemCellModel.Accessory? {
@@ -741,22 +756,28 @@ class AllItemsProcessor @Inject constructor(
     private suspend fun updateDeletedAttachmentFiles(notification: AttachmentFileDeletedNotification) {
         when (notification) {
             is AttachmentFileDeletedNotification.allForItems -> {
-                if (collection.identifier != notification.collectionIdentifier) {
-                    return
-                }
-                notification.keys.forEach {
+                if (library.identifier != notification.libraryId) return
+                val affectedKeys = mutableItemCellModels.filter { model ->
+                    model.key in notification.keys || itemAccessories[model.key]?.attachmentGet?.key in notification.keys
+                }.map { it.key }
+                affectedKeys.forEach {
                     updateAttachmentOnNotification(it)
                 }
             }
             is AttachmentFileDeletedNotification.individual -> {
+                if (library.identifier != notification.libraryId) return
                 val key = notification.parentKey ?: notification.key
                 updateAttachmentOnNotification(key)
             }
-
-            else -> {
-                //no-op
+            is AttachmentFileDeletedNotification.library -> {
+                if (library.identifier != notification.libraryId) return
+                mutableItemCellModels.map { it.key }.forEach { updateAttachmentOnNotification(it) }
+            }
+            AttachmentFileDeletedNotification.all -> {
+                mutableItemCellModels.map { it.key }.forEach { updateAttachmentOnNotification(it) }
             }
         }
+        sendChangedToUi(includeItemCellModels = true)
     }
 
     private suspend fun updateAttachmentOnNotification(key: String) {
@@ -766,12 +787,13 @@ class AllItemsProcessor @Inject constructor(
                 ?.let { accessory(it) }
         if (itemAccessory != null) {
             this@AllItemsProcessor.itemAccessories.put(key, itemAccessory)
+        } else {
+            this@AllItemsProcessor.itemAccessories.remove(key)
         }
         if(!coroutineContext.isActive) {
             return
         }
         updateCellAccessoryForItem(key)
-        sendChangedToUi(includeItemCellModels = true)
     }
 
     fun downloadSelectedAttachments(keys: Set<String>) {

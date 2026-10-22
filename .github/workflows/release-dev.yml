@@ -10,7 +10,7 @@ on:
         type: string
       base_version:
         description: Base version (major.minor.patch)
-        default: '1.0.0'
+        default: '1.1.0'
         required: true
         type: string
       version_code:

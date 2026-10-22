@@ -3,6 +3,7 @@ package org.zotero.android.screens.allitems.data
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.Color
+import org.zotero.android.covers.ItemCoverSource
 import org.zotero.android.database.DbWrapperMain
 import org.zotero.android.database.objects.AllItemsDbRowCreator
 import org.zotero.android.database.objects.RItem
@@ -20,6 +21,7 @@ data class ItemCellModel(
     val accessory: Accessory?,
     val tagColors: SnapshotStateList<Color>,
     val abstract: String = "",
+    val cover: ItemCoverSource? = null,
 ) {
 
     sealed class Accessory {
