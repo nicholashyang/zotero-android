@@ -1,0 +1,112 @@
+{
+  "releaseUrl": "https://github.com/nicholashyang/zotero-android/releases/tag/dev-v1.2.0-284",
+  "tag": "dev-v1.2.0-284",
+  "sourceCommit": "89fa5885c6de6af4d782bcb68577f1f1d3b4565c",
+  "publishedAt": "2026-10-22T21:43:48Z",
+  "latest": true,
+  "draft": false,
+  "prerelease": false,
+  "apk": {
+    "sizeBytes": 183897106,
+    "sha256": "2752886e5fc8402aeb0ca81d5d9f1cacf8586a829dcab88a76e588f3e7be471b",
+    "versionCode": 284,
+    "versionName": "1.2.0-284",
+    "applicationId": "org.zotero.android.debug",
+    "minSdk": 23,
+    "targetSdk": 36,
+    "publicAssetDigestVerified": true,
+    "signatureV1": true,
+    "signatureV2": true,
+    "signerCertificateSha256": "c4e70a6935d239246540532b6d3ea514eb2a428e1e8eaacbf94c8a9a01989299"
+  },
+  "workflow": {
+    "id": 39856243141,
+    "url": "https://github.com/nicholashyang/zotero-android/actions/runs/39856243141",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "build",
+        "conclusion": "success"
+      },
+      {
+        "name": "device-tests (23, x86, default)",
+        "conclusion": "success"
+      },
+      {
+        "name": "device-tests (33, x86_64, google_apis)",
+        "conclusion": "success"
+      },
+      {
+        "name": "device-tests (36, x86_64, google_apis)",
+        "conclusion": "success"
+      },
+      {
+        "name": "device-tests (26, x86_64, google_apis)",
+        "conclusion": "success"
+      },
+      {
+        "name": "publish",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "ciVerification": {
+    "jvm": {
+      "tests": 84,
+      "failures": 0,
+      "skipped": 0
+    },
+    "lint": {
+      "baselineVersion": "1.1.0-283",
+      "baselineIssues": 1278,
+      "currentIssues": 1279,
+      "baselineErrors": 572,
+      "currentErrors": 572,
+      "introducedIssues": [
+        {
+          "id": "GradleDependency",
+          "severity": "Warning",
+          "message": "A newer version of androidx.window:window than 1.5.0 is available: 1.5.1",
+          "files": [
+            "app/build.gradle.kts"
+          ],
+          "count": 1
+        }
+      ],
+      "reviewedAdvisory": {
+        "id": "GradleDependency",
+        "dependency": "androidx.window:window:1.5.0",
+        "availableVersion": "1.5.1",
+        "decision": "Retain the validated pinned dependency for this release. The 1.5.1 patch changes rear-display APIs in WindowAreaController, which the application does not call. Fold tracking uses WindowInfoTracker.",
+        "patchSource": "https://android.googlesource.com/platform/frameworks/support/+/4d5897960201a8713f0f77e0dbd4b0ec2009fff7"
+      }
+    }
+  },
+  "deviceMatrix": [
+    {
+      "api": 23,
+      "uiAndUpdateTests": 58,
+      "offlineRecoveryTests": 4,
+      "upgradeDataRetained": true
+    },
+    {
+      "api": 26,
+      "uiAndUpdateTests": 58,
+      "offlineRecoveryTests": 4,
+      "upgradeDataRetained": true
+    },
+    {
+      "api": 33,
+      "uiAndUpdateTests": 58,
+      "offlineRecoveryTests": 4,
+      "upgradeDataRetained": true
+    },
+    {
+      "api": 36,
+      "uiAndUpdateTests": 58,
+      "offlineRecoveryTests": 4,
+      "upgradeDataRetained": true,
+      "unfoldedAdaptiveTests": 8
+    }
+  ]
+}

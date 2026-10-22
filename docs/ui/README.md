@@ -1,6 +1,9 @@
 # 当前界面重构
 
-后续全局视觉统一与折叠屏适配见 [Native interface and foldable layout](NATIVE-REDESIGN.md)。
+已发布版本：[1.2.0-284](https://github.com/nicholashyang/zotero-android/releases/tag/dev-v1.2.0-284)。
+发布验证见 [RELEASE-1.2.0.md](../RELEASE-1.2.0.md)。
+
+全局视觉统一与折叠屏适配见 [Native interface and foldable layout](NATIVE-REDESIGN.md)。
 下文保留首轮改版的历史验证记录。
 
 # 首轮界面改版与验证记录
