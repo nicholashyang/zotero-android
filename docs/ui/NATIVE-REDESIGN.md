@@ -44,7 +44,7 @@ integration is in `AdaptiveWindow.kt`. It does not need device model checks.
 
 ## Validation
 
-The local implementation passed 84 JVM tests and 64 UI checks across phone, unfolded and landscape sizes on API 35. See the adjacent `native/` screenshots and logs. They are account-free examples
+The local implementation passed 84 JVM tests and 74 UI checks across phone, unfolded and landscape sizes on API 35. Four offline recovery tests also passed, and a `1.1.0-283` to `1.2.0-284` install retained its data marker. See the adjacent `native/` screenshots and logs. They are account-free examples
 built from production components with synthetic library entries. Hinge examples
 inject reported fold bounds into the same layout policy; they do not establish
 hardware certification. Physical Fold/Flip devices, authenticated synchronization

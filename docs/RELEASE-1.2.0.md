@@ -19,13 +19,16 @@ Android build: `1.2.0-284`. Release tag: `dev-v1.2.0-284`.
 ## Local verification
 
 The final interface implementation built successfully and passed 84 JVM tests.
-API 35 production-component fixtures passed 50 phone tests, seven unfolded tests
-and seven landscape tests. A separating-hinge preview passed an additional
+API 35 production-component fixtures passed 58 phone tests (including seven
+update checks), eight unfolded tests and eight landscape tests. Four offline
+update recovery tests also passed. The previous public `1.1.0-283` APK was
+covered by `1.2.0-284` with the retained-data marker intact. A separating-hinge preview passed an additional
 isolated repeat and was visually inspected, along with light/dark home pages,
 settings, sign-in and detail fixtures.
 
-These initial local captures used `1.1.0-283` metadata before the release version
-was raised; the release pipeline rebuilds the pinned commit as `1.2.0-284`.
+Lint completed with no introduced findings against the 1,272-issue pre-change
+baseline (572 existing errors). The final local APK and screenshots use `1.2.0-284` metadata. The release
+pipeline independently rebuilds the pinned source commit with the same version.
 [Interface and folding design](ui/NATIVE-REDESIGN.md) and
 [local validation data](ui/native/validation.json) describe the evidence.
 
