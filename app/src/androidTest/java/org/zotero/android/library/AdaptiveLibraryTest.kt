@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.*
 import org.junit.Rule
@@ -96,6 +97,25 @@ class AdaptiveLibraryTest {
     }
 
     @Test fun homePreview() = capture("home") { NativeHomeExample() }
+
+    @Test fun centeredDialogTranslatesHingeFromActivityWindow() {
+        val d = compose.activity.resources.displayMetrics.density
+        val width = compose.activity.resources.configuration.screenWidthDp
+        val center = width * d / 2
+        compose.setContent { LibraryTheme {
+            CompositionLocalProvider(LocalWindowFold provides WindowFold(
+                PaneBounds((center - 10*d).toInt(), 0, (center + 10*d).toInt(), 10000), FoldAxis.VERTICAL)) {
+                Dialog(onDismissRequest = {}) {
+                    FoldSafeContent(Modifier.size(300.dp, 400.dp)) {
+                        Box(Modifier.fillMaxSize().testTag("dialog-safe-pane"))
+                    }
+                }
+            }
+        } }
+        repeat(2) { compose.mainClock.advanceTimeByFrame(); compose.waitForIdle() }
+        val safe = compose.onNodeWithTag("dialog-safe-pane").fetchSemanticsNode().boundsInRoot.width
+        assertTrue("Dialog content must remain on one side of the hinge", safe <= 170 * d)
+    }
     @Test fun darkHomePreview() = capture("home-dark", true) { NativeHomeExample() }
     @Test fun separatingHingePreview() = capture("home-hinge") {
         val density = LocalDensity.current.density

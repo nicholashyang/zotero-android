@@ -74,7 +74,7 @@ if [ "$("$adb_bin" -s "$serial" shell getprop ro.build.version.sdk | tr -d '\r')
     org.zotero.android.debug.test/org.zotero.android.library.LibraryTestRunner | tee device-results/foldable.txt
   "$adb_bin" -s "$serial" shell wm size reset
   "$adb_bin" -s "$serial" shell wm density reset
-  grep -q '^OK (7 tests)' device-results/foldable.txt
+  grep -q '^OK (8 tests)' device-results/foldable.txt
   "$adb_bin" -s "$serial" shell tar -cf /data/local/tmp/zotero-foldable-screenshots.tar \
     -C /data/data/org.zotero.android.debug/files/ui-screenshots .
   "$adb_bin" -s "$serial" pull /data/local/tmp/zotero-foldable-screenshots.tar device-results/foldable-screenshots.tar

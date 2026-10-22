@@ -29,7 +29,8 @@ Navigation protocol flags are separate from the available display width.
 - Insufficient room on either side, or a horizontal fold: each scaffold uses
   the larger unobstructed pane, with the top/left pane winning equal sizes.
 - Fold bounds are translated from window coordinates to each nested scaffold.
-  Zero-width separating folds also count. Non-separating, non-occluding folds
+  Separate dialog windows translate their screen offsets back to the activity
+  window before avoiding a fold. Zero-width separating folds also count. Non-separating, non-occluding folds
   do not unnecessarily reduce the usable area.
 
 Fold information comes from lifecycle-aware collection of Jetpack WindowManager
@@ -62,7 +63,7 @@ bash gradlew --no-configuration-cache --max-workers=1 \
 The JVM policy tests cover compact and unfolded windows, density, short windows,
 real-width hinges, zero-width folds, nested coordinates and tabletop layouts.
 The Compose tests check content-state continuity during repeated resizing, safe
-pane bounds, and production-component previews in light and dark appearance.
+pane bounds, centered-dialog window offsets, and production-component previews in light and dark appearance.
 The existing search, selection, login, gesture, cover and formula checks remain
 part of the UI regression suite.
 

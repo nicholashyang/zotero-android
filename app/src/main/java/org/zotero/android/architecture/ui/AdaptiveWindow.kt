@@ -3,6 +3,7 @@ package org.zotero.android.architecture.ui
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.view.View
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,8 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -25,6 +28,7 @@ import kotlin.math.roundToInt
 
 internal val LocalWindowFold = staticCompositionLocalOf<WindowFold?> { null }
 private val LocalWindowTracking = staticCompositionLocalOf { false }
+private val LocalFoldWindowView = staticCompositionLocalOf<View?> { null }
 private tailrec fun Context.activity(): Activity? = when (this) {
     is Activity -> this
     is ContextWrapper -> baseContext.activity()
@@ -44,17 +48,33 @@ internal fun ProvideAdaptiveWindow(content: @Composable () -> Unit) {
         WindowFold(PaneBounds(it.bounds.left, it.bounds.top, it.bounds.right, it.bounds.bottom),
             if (it.orientation == FoldingFeature.Orientation.VERTICAL) FoldAxis.VERTICAL else FoldAxis.HORIZONTAL)
     }
-    CompositionLocalProvider(LocalWindowFold provides fold, LocalWindowTracking provides true, content = content)
+    CompositionLocalProvider(LocalWindowFold provides fold, LocalWindowTracking provides true,
+        LocalFoldWindowView provides activity.window.decorView, content = content)
+}
+
+/** Dialogs and the activity have different window origins on the same screen. */
+private fun LayoutCoordinates.originInFoldWindow(view: View, foldWindow: View?): IntOffset {
+    val p = positionInWindow()
+    if (foldWindow == null) return IntOffset(p.x.roundToInt(), p.y.roundToInt())
+    fun screenOrigin(target: View): IntOffset {
+        val screen = IntArray(2)
+        val window = IntArray(2)
+        target.getLocationOnScreen(screen)
+        target.getLocationInWindow(window)
+        return IntOffset(screen[0] - window[0], screen[1] - window[1])
+    }
+    return IntOffset(p.x.roundToInt(), p.y.roundToInt()) + screenOrigin(view) - screenOrigin(foldWindow)
 }
 
 /** Also protects full-screen forms and detail pages that do not need two panes. */
 @Composable
 internal fun FoldSafeContent(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     val fold = LocalWindowFold.current
+    val view = LocalView.current
+    val foldWindow = LocalFoldWindowView.current
     var origin by remember { mutableStateOf(IntOffset.Zero) }
     Layout(modifier = modifier.background(MaterialTheme.colorScheme.background).onGloballyPositioned {
-        val p = it.positionInWindow()
-        origin = IntOffset(p.x.roundToInt(), p.y.roundToInt())
+        origin = it.originInFoldWindow(view, foldWindow)
     }, content = { Box(Modifier.fillMaxSize()) { content() } }) { children, constraints ->
         val w = constraints.maxWidth
         val h = constraints.maxHeight
@@ -68,11 +88,12 @@ internal fun FoldSafeContent(modifier: Modifier = Modifier, content: @Composable
 @Composable
 internal fun AdaptiveLibraryWorkspace(sidebar: @Composable () -> Unit, content: @Composable () -> Unit) {
     val fold = LocalWindowFold.current
+    val view = LocalView.current
+    val foldWindow = LocalFoldWindowView.current
     val density = LocalDensity.current.density
     var origin by remember { mutableStateOf(IntOffset.Zero) }
     BoxWithConstraints(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).onGloballyPositioned {
-        val p = it.positionInWindow()
-        origin = IntOffset(p.x.roundToInt(), p.y.roundToInt())
+        origin = it.originInFoldWindow(view, foldWindow)
     }) {
         val plan = workspacePlan(constraints.maxWidth, constraints.maxHeight, density, origin.x, fold)
         Layout(content = {

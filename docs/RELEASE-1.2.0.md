@@ -31,7 +31,7 @@ was raised; the release pipeline rebuilds the pinned commit as `1.2.0-284`.
 
 The existing release workflow gates publication on build, JVM tests, Lint,
 signature/manifest checks, API 23/26/33/36 UI and upgrade checks, and offline
-update recovery. This version adds the seven adaptive UI checks to each device
+update recovery. This version adds the eight adaptive UI checks to each device
 and an unfolded-window run on API 36. Actual CI results are recorded after the
 workflow completes.
 
