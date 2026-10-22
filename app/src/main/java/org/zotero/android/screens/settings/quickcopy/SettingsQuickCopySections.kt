@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import org.zotero.android.screens.settings.elements.NewSettingsItemWithDescription
 import org.zotero.android.uicomponents.Strings
+import org.zotero.android.uicomponents.library.LibraryDivider
 
 
 @Composable
@@ -22,6 +23,7 @@ internal fun SettingsQuickCopySections(
         onItemTapped = onDefaultFormatTapped
     )
 
+    LibraryDivider()
     NewSettingsItemWithDescription(
         title = stringResource(Strings.settings_export_language),
         description = selectedLanguage,
@@ -29,6 +31,7 @@ internal fun SettingsQuickCopySections(
         onItemTapped = onLanguageTapped
     )
 
+    LibraryDivider()
     SettingsQuickCopySwitchItem(
         title = stringResource(Strings.settings_export_copy_as_html),
         isChecked = copyAsHtml,

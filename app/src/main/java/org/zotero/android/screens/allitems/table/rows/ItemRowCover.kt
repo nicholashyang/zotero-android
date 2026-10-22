@@ -33,7 +33,7 @@ internal fun ItemRowCover(model: ItemCellModel) {
             value = model.cover?.let { ItemCoverLoader.load(it, context.cacheDir) }
         }
         val image = bitmap
-        val shape = RoundedCornerShape(4.dp)
+        val shape = RoundedCornerShape(6.dp)
         Box(
             modifier = Modifier.size(48.dp, 64.dp)
                 .clip(shape)

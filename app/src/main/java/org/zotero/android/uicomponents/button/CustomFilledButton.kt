@@ -1,5 +1,7 @@
 package org.zotero.android.uicomponents.button
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.dp
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
@@ -17,7 +19,7 @@ fun CustomFilledButton(
     FilledTonalButton(
         modifier = modifier,
         onClick = { if (!isLoading) onClick() },
-        shapes = ButtonDefaults.shapes(),
+        shape = RoundedCornerShape(14.dp),
         colors = ButtonDefaults.filledTonalButtonColors(containerColor = MaterialTheme.colorScheme.primary),
     ) {
         if (isLoading) {

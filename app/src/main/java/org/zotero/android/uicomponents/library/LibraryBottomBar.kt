@@ -18,11 +18,11 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun LibraryBottomBar(content: @Composable RowScope.() -> Unit) {
-    Surface(color = MaterialTheme.colorScheme.surface) {
+    Surface(color = MaterialTheme.colorScheme.surface.copy(alpha = 0.97f)) {
         Column(Modifier.navigationBarsPadding()) {
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
             Row(
-                modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)
+                modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)
                     .padding(horizontal = LibraryMetrics.pageInset),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,

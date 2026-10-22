@@ -1,6 +1,8 @@
 package org.zotero.android.screens.settings.account.sections
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import org.zotero.android.uicomponents.library.LibrarySection
 import org.zotero.android.screens.settings.account.SettingsAccountViewModel
 import org.zotero.android.screens.settings.account.SettingsAccountViewState
 import org.zotero.android.screens.settings.elements.NewSettingsDivider
@@ -13,10 +15,10 @@ internal fun SettingsAccountFileSyncingSection(
     viewState: SettingsAccountViewState,
     viewModel: SettingsAccountViewModel
 ) {
-    NewSettingsDivider()
-    NewSettingsSectionTitle(titleId = Strings.settings_sync_file_syncing)
+    LibrarySection(stringResource(Strings.settings_sync_file_syncing)) {
     SettingsAccountFileSyncingSyncMethodChooserItem(viewModel, viewState)
     if (viewState.fileSyncType == FileSyncType.webDav) {
         SettingsAccountFileSyncingWebDavItems(viewModel, viewState)
+    }
     }
 }

@@ -35,10 +35,8 @@ import org.zotero.android.architecture.EventBusConstants.FileWasSelected.CallPoi
 import org.zotero.android.architecture.EventBusConstants.FileWasSelected.CallPoint.AllItems
 import org.zotero.android.architecture.coroutines.Dispatchers
 import org.zotero.android.architecture.navigation.DashboardTopLevelDialogs
-import org.zotero.android.architecture.navigation.phone.DashboardRootPhoneNavigation
-import org.zotero.android.architecture.navigation.tablet.DashboardRootTopLevelTabletNavigation
+import org.zotero.android.architecture.navigation.phone.DashboardRootAdaptiveNavigation
 import org.zotero.android.architecture.navigation.toolbar.SyncToolbarScreen
-import org.zotero.android.architecture.ui.CustomLayoutSize
 import org.zotero.android.files.FileStore
 import org.zotero.android.ktx.enableEdgeToEdgeAndTranslucency
 import org.zotero.android.uicomponents.library.LibraryTheme
@@ -150,37 +148,22 @@ internal class DashboardActivity : BaseActivity() {
                     Box {
                         val viewState by viewModel.viewStates.observeAsState(DashboardViewState())
                         val viewEffect by viewModel.viewEffects.observeAsState()
-                        val isTablet = CustomLayoutSize.calculateLayoutType().isTablet()
                         LaunchedEffect(key1 = viewModel) {
-                            viewModel.init(isTablet = isTablet)
+                            viewModel.init(isTablet = false)
                         }
                         if (viewState.initialLoadData != null) {
-                            val layoutType = CustomLayoutSize.calculateLayoutType()
-                            if (layoutType.isTablet()) {
-                                DashboardRootTopLevelTabletNavigation(
-                                    collectionDefaultValue = collectionDefaultValue,
-                                    onPickFile = onPickFile,
-                                    viewEffect = viewEffect,
-                                    onOpenFile = onOpenFile,
-                                    onOpenWebpage = onOpenWebpage,
-                                    wasPspdfkitInitialized = wasPspdfkitInitialized,
-                                    onExportPdf = onExportPdf,
-                                    onExportHtml = onExportHtml,
-                                    onExitApp = { finish() }
-                                )
-                            } else {
-                                DashboardRootPhoneNavigation(
-                                    collectionDefaultValue = collectionDefaultValue,
-                                    onPickFile = onPickFile,
-                                    onOpenFile = onOpenFile,
-                                    onOpenWebpage = onOpenWebpage,
-                                    wasPspdfkitInitialized = wasPspdfkitInitialized,
-                                    viewEffect = viewEffect,
-                                    onExportPdf = onExportPdf,
-                                    onExportHtml = onExportHtml,
-                                    onExitApp = { finish() }
-                                )
-                            }
+                            // A stable navigation graph survives every window-size change.
+                            DashboardRootAdaptiveNavigation(
+                                collectionDefaultValue = collectionDefaultValue,
+                                onPickFile = onPickFile,
+                                onOpenFile = onOpenFile,
+                                onOpenWebpage = onOpenWebpage,
+                                wasPspdfkitInitialized = wasPspdfkitInitialized,
+                                viewEffect = viewEffect,
+                                onExportPdf = onExportPdf,
+                                onExportHtml = onExportHtml,
+                                onExitApp = { finish() }
+                            )
                             DashboardTopLevelDialogs(viewState = viewState, viewModel = viewModel)
                             SyncToolbarScreen()
                         }

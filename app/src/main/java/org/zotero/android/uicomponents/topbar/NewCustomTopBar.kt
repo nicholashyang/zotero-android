@@ -1,5 +1,6 @@
 package org.zotero.android.uicomponents.topbar
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -33,7 +34,7 @@ fun NewCustomTopBar(
     }
     ConstraintLayout(
         modifier = modifier
-            .height(56.dp)
+            .height(52.dp).background(CustomTheme.colors.topBarBackgroundColor)
     ) {
         val (leftContainer, rightContainer, titleContainer, bottomDivider) = createRefs()
 
@@ -112,7 +113,7 @@ fun NewCustomTopBarWithTitleContainer(
     }
     ConstraintLayout(
         modifier = modifier
-            .height(56.dp)
+            .height(52.dp).background(CustomTheme.colors.topBarBackgroundColor)
     ) {
         val (leftContainer, rightContainer, titleContainer, bottomDivider) = createRefs()
 

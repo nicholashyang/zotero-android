@@ -1,6 +1,8 @@
 package org.zotero.android.screens.settings.account
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,6 +16,8 @@ import org.zotero.android.screens.settings.account.sections.SettingsAccountAccou
 import org.zotero.android.screens.settings.account.sections.SettingsAccountDataSyncSection
 import org.zotero.android.screens.settings.account.sections.SettingsAccountFileSyncingSection
 import org.zotero.android.uicomponents.CustomScaffoldM3
+import org.zotero.android.uicomponents.library.LibraryMetrics
+import org.zotero.android.uicomponents.library.LibraryScaffold
 import org.zotero.android.uicomponents.themem3.AppThemeM3
 
 @Composable
@@ -46,7 +50,7 @@ internal fun SettingsAccountScreen(
                 }
             }
         }
-        CustomScaffoldM3(
+        LibraryScaffold(
             topBar = {
                 SettingsAccountTopBar(
                     onBack = onBack,
@@ -55,7 +59,9 @@ internal fun SettingsAccountScreen(
         ) {
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(LibraryMetrics.pageInset),
+                verticalArrangement = Arrangement.spacedBy(LibraryMetrics.groupGap),
             ) {
                 item {
                     SettingsAccountDataSyncSection(viewState, viewModel)

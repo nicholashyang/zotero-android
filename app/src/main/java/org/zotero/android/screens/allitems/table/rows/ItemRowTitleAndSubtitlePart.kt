@@ -37,7 +37,7 @@ internal fun RowScope.ItemRowTitleAndSubtitlePart(model: ItemCellModel) {
             text = model.title.ifEmpty { " " },
             maxLines = 2,
             color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.titleMedium,
         )
         Spacer(modifier = Modifier.height(4.dp))
         Row {

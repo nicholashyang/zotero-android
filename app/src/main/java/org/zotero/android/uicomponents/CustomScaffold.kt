@@ -1,6 +1,8 @@
 package org.zotero.android.uicomponents
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
+import org.zotero.android.architecture.ui.FoldSafeContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -30,35 +32,37 @@ fun CustomScaffold(
     bottomBarColor: Color = CustomTheme.colors.surface,
     content: @Composable (PaddingValues) -> Unit
 ) {
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            val modifierTopBar = Modifier
-                .background(topBarColor)
-                .windowInsetsPadding(TopAppBarDefaults.windowInsets)
-            Box(modifier = modifierTopBar) {
-                topBar()
-            }
-        },
-        bottomBar = bottomBar,
-        snackbarHost = {
-            CustomSnackbarHost(
-                state = snackbarHostState,
-                snackbarMessage = snackbarMessage
-            )
-        },
-        floatingActionButton = floatingActionButton,
-        floatingActionButtonPosition = floatingActionButtonPosition,
-        containerColor = CustomTheme.colors.surface,
-        content = { it ->
-            Box(modifier = Modifier.background(bottomBarColor)) {
-                Box(modifier = Modifier
-                    .padding(it)
-                    .background(CustomTheme.colors.surface)
-                ) {
-                    content(it)
+    FoldSafeContent(Modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = modifier,
+            topBar = {
+                val modifierTopBar = Modifier
+                    .background(topBarColor)
+                    .windowInsetsPadding(TopAppBarDefaults.windowInsets)
+                Box(modifier = modifierTopBar) {
+                    topBar()
                 }
-            }
-        },
-    )
+            },
+            bottomBar = bottomBar,
+            snackbarHost = {
+                CustomSnackbarHost(
+                    state = snackbarHostState,
+                    snackbarMessage = snackbarMessage
+                )
+            },
+            floatingActionButton = floatingActionButton,
+            floatingActionButtonPosition = floatingActionButtonPosition,
+            containerColor = CustomTheme.colors.surface,
+            content = { it ->
+                Box(modifier = Modifier.background(bottomBarColor)) {
+                    Box(modifier = Modifier
+                        .padding(it)
+                        .background(CustomTheme.colors.surface)
+                    ) {
+                        content(it)
+                    }
+                }
+            },
+        )
+    }
 }

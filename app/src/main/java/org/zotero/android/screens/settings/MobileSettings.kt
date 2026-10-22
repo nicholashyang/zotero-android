@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
@@ -34,13 +35,20 @@ internal fun MobilePreferencesGroup(onPermissions: () -> Unit) {
     val state by preferences.state.collectAsState()
     var picker by remember { mutableStateOf<String?>(null) }
     LibraryGroup {
-        LibraryRow(stringResource(R.string.mobile_appearance), { picker = "theme" }, trailing = { Text(stringResource(state.appearance.label)) })
+        LibraryRow(stringResource(R.string.mobile_appearance), { picker = "theme" },
+            leading = { LibraryBadge(R.drawable.ic_native_appearance, Color(0xFF5856D6)) },
+            trailing = { PreferenceValue(stringResource(state.appearance.label)) })
         LibraryDivider()
-        LibraryRow(stringResource(R.string.mobile_swipe_left), { picker = "left" }, trailing = { Text(stringResource(state.leftSwipe.label)) })
+        LibraryRow(stringResource(R.string.mobile_swipe_left), { picker = "left" },
+            leading = { LibraryBadge(R.drawable.ic_native_swipe, Color(0xFF007AFF)) },
+            trailing = { PreferenceValue(stringResource(state.leftSwipe.label)) })
         LibraryDivider()
-        LibraryRow(stringResource(R.string.mobile_swipe_right), { picker = "right" }, trailing = { Text(stringResource(state.rightSwipe.label)) })
+        LibraryRow(stringResource(R.string.mobile_swipe_right), { picker = "right" },
+            leading = { LibraryBadge(R.drawable.ic_native_swipe, Color(0xFF007AFF)) },
+            trailing = { PreferenceValue(stringResource(state.rightSwipe.label)) })
         LibraryDivider()
-        LibraryRow(stringResource(R.string.mobile_permissions), onPermissions)
+        LibraryRow(stringResource(R.string.mobile_permissions), onPermissions,
+            leading = { LibraryBadge(R.drawable.ic_native_shield, Color(0xFF8E8E93)) })
     }
     picker?.let { choice ->
         AlertDialog(onDismissRequest = { picker = null },
@@ -63,6 +71,12 @@ internal fun MobilePreferencesGroup(onPermissions: () -> Unit) {
                 }
             }, confirmButton = { TextButton(onClick = { picker = null }) { Text(stringResource(android.R.string.cancel)) } })
     }
+}
+
+@Composable
+private fun RowScope.PreferenceValue(value: String) {
+    Text(value, modifier = Modifier.widthIn(max = 160.dp), style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
 @Composable

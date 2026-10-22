@@ -1,6 +1,8 @@
 package org.zotero.android.screens.settings.quickcopy
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -18,25 +20,23 @@ internal fun SettingsQuickCopySwitchItem(
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
 ) {
-    Box(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 48.dp)
+            .heightIn(min = 52.dp).padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(start = 16.dp),
+                .weight(1f).padding(vertical = 12.dp),
             text = title,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
         )
+        Spacer(Modifier.width(12.dp))
         CustomSwitch(
             checked = isChecked,
             onCheckedChange = onCheckedChange,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 16.dp),
         )
     }
 }

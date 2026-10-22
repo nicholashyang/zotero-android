@@ -1,0 +1,8 @@
+
+org.zotero.android.library.AdaptiveLibraryTest:.......
+
+Time: 9.084
+
+OK (7 tests)
+
+

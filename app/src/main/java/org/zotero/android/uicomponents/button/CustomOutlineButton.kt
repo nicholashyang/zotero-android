@@ -1,5 +1,7 @@
 package org.zotero.android.uicomponents.button
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.dp
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -13,7 +15,7 @@ fun CustomOutlineButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    OutlinedButton(modifier = modifier, onClick = onClick, shapes = ButtonDefaults.shapes()) {
+    OutlinedButton(modifier = modifier, onClick = onClick, shape = RoundedCornerShape(14.dp)) {
         Text(
             text = text,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

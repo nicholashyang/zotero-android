@@ -2,11 +2,11 @@ package org.zotero.android.architecture.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.lang.Integer.min
 
 object CustomLayoutSize {
     enum class LayoutType {
@@ -77,13 +77,17 @@ object CustomLayoutSize {
     fun calculateLayoutType(): LayoutType {
         val configuration = LocalConfiguration.current
 
-        val screenWidth = configuration.screenWidthDp
-        val screenHeight = configuration.screenHeightDp
+        val density = LocalDensity.current.density
+        val bounds = safePane((configuration.screenWidthDp * density).toInt(),
+            (configuration.screenHeightDp * density).toInt(), 0, 0, LocalWindowFold.current)
+        val screenWidth = bounds.width / density
+        val screenHeight = bounds.height / density
 
-        val size = min(screenWidth, screenHeight).dp
-        if (size >= 834.dp) {
+        // Window width changes on fold/unfold and in split screen. The shortest
+        // physical dimension incorrectly classifies landscape and inner displays.
+        if (screenWidth >= 1100 && screenHeight >= 400) {
             return LayoutType.big
-        } else if (size >= 680.dp) {
+        } else if (screenWidth >= 720 && screenHeight >= 400) {
             return LayoutType.medium
         }
         return LayoutType.small

@@ -1,3 +1,8 @@
+# 当前界面重构
+
+后续全局视觉统一与折叠屏适配见 [Native interface and foldable layout](NATIVE-REDESIGN.md)。
+下文保留首轮改版的历史验证记录。
+
 # 首轮界面改版与验证记录
 
 基线：`b5b71acd02f8771218321099b84c3c56dc00b190`。

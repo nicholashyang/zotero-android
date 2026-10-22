@@ -1,6 +1,11 @@
 package org.zotero.android.screens.settings.quickcopy
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import org.zotero.android.uicomponents.library.LibraryGroup
+import org.zotero.android.uicomponents.library.LibraryMetrics
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,8 +55,9 @@ internal fun SettingsQuickCopyScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxSize().verticalScroll(rememberScrollState()).padding(LibraryMetrics.pageInset)
             ) {
+                LibraryGroup {
                 SettingsQuickCopySections(
                     selectedStyle = viewState.selectedStyle,
                     selectedLanguage = viewState.selectedLanguage,
@@ -61,6 +67,7 @@ internal fun SettingsQuickCopyScreen(
                     onLanguageTapped = viewModel::onLanguageTapped,
                     onQuickCopySwitchTapped = viewModel::onQuickCopySwitchTapped,
                 )
+                }
             }
         }
 

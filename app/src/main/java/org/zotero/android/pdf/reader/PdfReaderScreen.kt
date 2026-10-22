@@ -4,6 +4,7 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -76,6 +77,7 @@ internal fun PdfReaderScreen(
         val annotationsLazyListState = rememberLazyListState()
         val thumbnailsLazyListState = rememberLazyListState()
         val layoutType = CustomLayoutSize.calculateLayoutType()
+        SideEffect { viewModel.updateWindowLayout(layoutType.isTablet()) }
         val focusManager = LocalFocusManager.current
         LaunchedEffect(key1 = viewEffect) {
             when (val consumedEffect = viewEffect?.consume()) {

@@ -1,11 +1,7 @@
 package org.zotero.android.screens.allitems
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import org.zotero.android.screens.downloadedfiles.DownloadedFilesPopup
 import org.zotero.android.uicomponents.Drawables
@@ -45,17 +41,15 @@ internal fun AllItemsToolbar(
                 onClick = onFilter,
             )
         }
-        FilledIconButton(onClick = onAdd) {
-            Icon(
-                painter = painterResource(Drawables.add_24px),
-                contentDescription = stringResource(Strings.all_items_bottom_panel_add_new_item),
-                tint = MaterialTheme.colorScheme.onPrimary,
-            )
-        }
         LibraryIconButton(
             Drawables.swap_vert_24px,
             stringResource(Strings.all_items_bottom_panel_sort_by),
             onSort,
+        )
+        LibraryIconButton(
+            Drawables.add_24px,
+            stringResource(Strings.all_items_bottom_panel_add_new_item),
+            onAdd,
         )
     }
 }

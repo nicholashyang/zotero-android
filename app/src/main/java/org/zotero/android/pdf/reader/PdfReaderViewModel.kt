@@ -240,6 +240,11 @@ class PdfReaderViewModel @Inject constructor(
     private val onCommentChangeFlow = MutableStateFlow<Pair<String, String>?>(null)
     private lateinit var fragmentManager: FragmentManager
     private var isTablet: Boolean = false
+
+    fun updateWindowLayout(isWide: Boolean) {
+        isTablet = isWide
+    }
+
     private var backgroundColor: androidx.compose.ui.graphics.Color? = null
 
     private val handler = Handler(context.mainLooper)

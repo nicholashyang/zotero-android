@@ -1,6 +1,5 @@
 package org.zotero.android.uicomponents.library
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
@@ -8,35 +7,36 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.zotero.android.uicomponents.CustomUriHandler
+import org.zotero.android.uicomponents.theme.CustomTheme
 
 internal object LibraryMetrics {
-    val pageInset = 16.dp
-    val groupGap = 24.dp
-    val groupShape = RoundedCornerShape(12.dp)
+    val pageInset = 20.dp
+    val groupGap = 28.dp
+    val groupRadius = 14.dp
+    val groupShape = RoundedCornerShape(groupRadius)
     val minimumTouchTarget = 48.dp
     val minimumRowHeight = 56.dp
 }
 
-private val lightColors = lightColorScheme(
-    primary = Color(0xFFC62836),
+internal val LibraryLightColors = lightColorScheme(
+    primary = Color(0xFF0066CC),
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFFCE8EB),
-    onPrimaryContainer = Color(0xFF8C1825),
+    primaryContainer = Color(0xFFE6F0FF),
+    onPrimaryContainer = Color(0xFF004C99),
     secondary = Color(0xFF626268),
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFFFCE8EB),
-    onSecondaryContainer = Color(0xFF8C1825),
+    secondaryContainer = Color(0xFFE6F0FF),
+    onSecondaryContainer = Color(0xFF004C99),
     tertiary = Color(0xFF626268),
+    onTertiary = Color.White,
+    tertiaryContainer = Color(0xFFE8E8ED),
+    onTertiaryContainer = Color(0xFF1C1C1E),
     background = Color(0xFFF2F2F7),
     onBackground = Color(0xFF1C1C1E),
     surface = Color.White,
@@ -49,23 +49,30 @@ private val lightColors = lightColorScheme(
     surfaceContainerHigh = Color(0xFFE8E8ED),
     surfaceContainerHighest = Color(0xFFDEDEE5),
     outline = Color(0xFF76767D),
-    outlineVariant = Color(0xFFE2E2E7),
+    outlineVariant = Color(0xFFD8D8DE),
+    surfaceTint = Color.Transparent,
+    inverseSurface = Color(0xFF2C2C2E),
+    inverseOnSurface = Color(0xFFF2F2F7),
+    inversePrimary = Color(0xFF64ACFF),
     error = Color(0xFFB42318),
     onError = Color.White,
     errorContainer = Color(0xFFFFEDEA),
     onErrorContainer = Color(0xFF801D15),
 )
 
-private val darkColors = darkColorScheme(
-    primary = Color(0xFFFF7B85),
-    onPrimary = Color(0xFF410B12),
-    primaryContainer = Color(0xFF4A2229),
-    onPrimaryContainer = Color(0xFFFFB7BE),
+internal val LibraryDarkColors = darkColorScheme(
+    primary = Color(0xFF64ACFF),
+    onPrimary = Color(0xFF00264D),
+    primaryContainer = Color(0xFF102D50),
+    onPrimaryContainer = Color(0xFFB8D8FF),
     secondary = Color(0xFFB0B0B8),
     onSecondary = Color(0xFF1C1C1E),
-    secondaryContainer = Color(0xFF4A2229),
-    onSecondaryContainer = Color(0xFFFFB7BE),
+    secondaryContainer = Color(0xFF102D50),
+    onSecondaryContainer = Color(0xFFB8D8FF),
     tertiary = Color(0xFFB0B0B8),
+    onTertiary = Color(0xFF1C1C1E),
+    tertiaryContainer = Color(0xFF2C2C2E),
+    onTertiaryContainer = Color(0xFFF2F2F7),
     background = Color(0xFF000000),
     onBackground = Color(0xFFF2F2F7),
     surface = Color(0xFF1C1C1E),
@@ -79,6 +86,10 @@ private val darkColors = darkColorScheme(
     surfaceContainerHighest = Color(0xFF3A3A3C),
     outline = Color(0xFF8E8E93),
     outlineVariant = Color(0xFF38383A),
+    surfaceTint = Color.Transparent,
+    inverseSurface = Color(0xFFF2F2F7),
+    inverseOnSurface = Color(0xFF1C1C1E),
+    inversePrimary = Color(0xFF0066CC),
     error = Color(0xFFFFB4A9),
     onError = Color(0xFF680D07),
     errorContainer = Color(0xFF54211C),
@@ -94,39 +105,44 @@ private fun textStyle(size: Int, height: Int, weight: FontWeight = FontWeight.No
         letterSpacing = 0.sp,
     )
 
-private val typography = Typography(
-    headlineLarge = textStyle(32, 38, FontWeight.Bold),
-    headlineMedium = textStyle(32, 38, FontWeight.Bold),
-    headlineSmall = textStyle(24, 30, FontWeight.Bold),
-    titleLarge = textStyle(20, 26, FontWeight.SemiBold),
-    titleMedium = textStyle(16, 22, FontWeight.SemiBold),
+internal val LibraryTypography = Typography(
+    displayLarge = textStyle(48, 54, FontWeight.Bold),
+    displayMedium = textStyle(40, 46, FontWeight.Bold),
+    displaySmall = textStyle(34, 41, FontWeight.Bold),
+    headlineLarge = textStyle(34, 41, FontWeight.Bold),
+    headlineMedium = textStyle(34, 41, FontWeight.Bold),
+    headlineSmall = textStyle(26, 33, FontWeight.Bold),
+    titleLarge = textStyle(17, 22, FontWeight.SemiBold),
+    titleLargeEmphasized = textStyle(24, 30, FontWeight.Bold),
+    titleMedium = textStyle(17, 23, FontWeight.SemiBold),
     titleSmall = textStyle(13, 18, FontWeight.SemiBold),
-    bodyLarge = textStyle(16, 24),
-    bodyMedium = textStyle(13, 19),
+    bodyLarge = textStyle(17, 24),
+    bodyMedium = textStyle(15, 21),
     bodySmall = textStyle(13, 19),
-    labelLarge = textStyle(16, 22, FontWeight.Medium),
+    labelLarge = textStyle(17, 22, FontWeight.SemiBold),
     labelMedium = textStyle(13, 18, FontWeight.Medium),
     labelSmall = textStyle(13, 18),
 )
 
-/** Theme for the library shell; readers keep their own explicit AppThemeM3. */
+internal val LibraryShapes = Shapes(
+    extraSmall = RoundedCornerShape(6.dp),
+    small = RoundedCornerShape(10.dp),
+    medium = LibraryMetrics.groupShape,
+    large = RoundedCornerShape(20.dp),
+    extraLarge = RoundedCornerShape(28.dp),
+)
+
+/** Shared visual language for library, account, import and reader controls. */
 @Composable
 internal fun LibraryTheme(
     darkTheme: Boolean = org.zotero.android.preferences.appDarkTheme(),
     content: @Composable () -> Unit,
 ) {
     MaterialTheme(
-        colorScheme = if (darkTheme) darkColors else lightColors,
-        typography = typography,
-        shapes = Shapes(
-            small = RoundedCornerShape(8.dp),
-            medium = LibraryMetrics.groupShape,
-            large = RoundedCornerShape(16.dp),
-        ),
+        colorScheme = if (darkTheme) LibraryDarkColors else LibraryLightColors,
+        typography = LibraryTypography,
+        shapes = LibraryShapes,
     ) {
-        CompositionLocalProvider(
-            LocalUriHandler provides CustomUriHandler(LocalContext.current),
-            content = content,
-        )
+        CustomTheme(isDarkTheme = darkTheme, content = content)
     }
 }

@@ -122,7 +122,7 @@ class MobileUiTest {
             org.zotero.android.screens.allitems.MobileHomeHeader("My Library", "All Items", "", tablet,
                 TopAppBarDefaults.pinnedScrollBehavior(), { libraries++ }, {}, { settings++ }, {})
         } } }
-        compose.onNodeWithText("My Library ▾").performClick()
+        compose.onNodeWithText("My Library").performClick()
         compose.onNodeWithContentDescription(text(org.zotero.android.uicomponents.Strings.settings_title)).performClick()
         compose.runOnIdle { assertEquals(1, libraries); assertEquals(1, settings) }
         screenshot(name)

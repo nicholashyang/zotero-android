@@ -10,6 +10,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import org.zotero.android.uicomponents.CustomUriHandler
+import org.zotero.android.architecture.ui.ProvideAdaptiveWindow
 
 object CustomTheme {
     val colors
@@ -49,7 +50,7 @@ fun CustomTheme(
         LocalCustomShapes provides CustomShapes(),
         LocalUriHandler provides CustomUriHandler(LocalContext.current),
     ) {
-        content()
+        ProvideAdaptiveWindow(content)
     }
 }
 

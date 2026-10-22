@@ -32,6 +32,7 @@ import org.zotero.android.uicomponents.Strings
 import org.zotero.android.uicomponents.foundation.debounceCombinedClickable
 import org.zotero.android.uicomponents.library.LibraryIconButton
 import org.zotero.android.uicomponents.library.LibraryMetrics
+import org.zotero.android.uicomponents.library.librarySymbol
 
 @Composable
 internal fun CollectionRowItem(
@@ -82,7 +83,7 @@ internal fun CollectionRowItem(
         }
         Icon(
             modifier = Modifier.size(mainIconSize),
-            painter = painterResource(id = collection.iconName),
+            painter = painterResource(id = librarySymbol(collection.iconName)),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary
         )

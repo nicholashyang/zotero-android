@@ -13,16 +13,16 @@ object CustomPalette {
     val Green = Color(0xFF007f03)
     val Blue = Color(0xFF0000FF)
     val Black = Color(0xFF000000)
-    val Charcoal = Color(0xFF2A2D35)
-    val DarkCharcoal = Color(0xFF1A1C21)
-    val LightCharcoal = Color(0xFF606272)
-    val CoolGray = Color(0xFF888AA0)
-    val LightCoolGray = Color(0xFFC3C4CF)
-    val FeatherGray = Color(0xFFDEDFEB)
-    val FogGray = Color(0xFFEEEFF5)
-    val LightFogGray = Color(0xFFF5F5F9)
+    val Charcoal = Color(0xFF2C2C2E)
+    val DarkCharcoal = Color(0xFF1C1C1E)
+    val LightCharcoal = Color(0xFF636366)
+    val CoolGray = Color(0xFF8E8E93)
+    val LightCoolGray = Color(0xFFC7C7CC)
+    val FeatherGray = Color(0xFFE5E5EA)
+    val FogGray = Color(0xFFF2F2F7)
+    val LightFogGray = Color(0xFFF9F9FB)
     val White = Color(0xFFFFFFFF)
-    val ErrorRed = Color(0xFFE0244D)
+    val ErrorRed = Color(0xFFD70015)
     val ErrorRedDark = Color(0xFF2D070F)
 
     val ErrorRedDarkShadeThree = Color(0xFF5A0E1F)
@@ -139,7 +139,7 @@ fun lightCustomColors(
     surface = CustomPalette.White,
     uiControl = CustomPalette.Charcoal,
     windowBackground = CustomPalette.FogGray,
-    zoteroBlueWithDarkMode = Color(0xFF4071E6),
+    zoteroBlueWithDarkMode = Color(0xFF0066CC),
     zoteroItemDetailSectionBackground = Color(0xFFF2F2F7),
     zoteroEditFieldBackground = Color(0xFFFFFFFF),
     popupBackgroundTop = Color(0xFFF8F8F8),
@@ -160,8 +160,8 @@ fun lightCustomColors(
     allItemsRowTitleColor = Color.Black,
     pdfToolbarBackgroundColor= Color(0xFFFCFBFD),
     pdfSizePickerColor = Color(0xFF6E6D73),
-    allItemsInfoIconColor = Color(0xFF1A88FF),
-    zoteroDefaultBlue = Color(0xFF4072E5),
+    allItemsInfoIconColor = Color(0xFF0066CC),
+    zoteroDefaultBlue = Color(0xFF0066CC),
     topBarBackgroundColor = Color(0xFFF7F7F7),
     newDividerColor = Color(0xFFE5E5E5),
     popupDividerColor = Color(0xFFE5E5E5),
@@ -192,7 +192,7 @@ fun darkCustomColors(
     surface = CustomPalette.Black,
     uiControl = CustomPalette.CoolGray,
     windowBackground = CustomPalette.DarkCharcoal,
-    zoteroBlueWithDarkMode = Color(0xFF335BB8),
+    zoteroBlueWithDarkMode = Color(0xFF64ACFF),
     zoteroItemDetailSectionBackground = Color(0xFF1C1C1E),
     zoteroEditFieldBackground = Color(0xFF2C2C2E),
     popupBackgroundTop = Color(0xFF282828),
@@ -213,9 +213,9 @@ fun darkCustomColors(
     allItemsRowTitleColor = Color.White,
     pdfToolbarBackgroundColor= Color(0xFF282729),
     pdfSizePickerColor = Color(0xFF8E8E93),
-    allItemsInfoIconColor = Color(0xFF0976E5),
-    zoteroDefaultBlue = Color(0xFF4072E5),
-    topBarBackgroundColor = Color(0xFF282928),
+    allItemsInfoIconColor = Color(0xFF64ACFF),
+    zoteroDefaultBlue = Color(0xFF64ACFF),
+    topBarBackgroundColor = Color(0xFF1C1C1E),
     newDividerColor = CustomPalette.Charcoal,
     popupDividerColor = Color(0xFF505051),
     pdfEditAnnotationDividerBackground = Color(0xFF2F2F31),

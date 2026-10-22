@@ -26,6 +26,7 @@ import org.zotero.android.uicomponents.misc.NewDivider
 @Composable
 internal fun CollectionsScreen(
     onBack: () -> Unit,
+    usesTabletNavigation: Boolean = false,
     navigateToAllItems: (String) -> Unit,
     navigateToLibraries: (String) -> Unit,
     navigateToCollectionEdit: () -> Unit,
@@ -35,7 +36,7 @@ internal fun CollectionsScreen(
     val layoutType = CustomLayoutSize.calculateLayoutType()
     val viewState by viewModel.viewStates.observeAsState(CollectionsViewState())
     val viewEffect by viewModel.viewEffects.observeAsState()
-    val isTablet = layoutType.isTablet()
+    val isTablet = usesTabletNavigation
 
     BackHandler(
         enabled = viewState.backHandlerEnabled,

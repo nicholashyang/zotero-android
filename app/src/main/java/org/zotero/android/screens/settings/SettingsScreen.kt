@@ -3,6 +3,12 @@ package org.zotero.android.screens.settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import org.zotero.android.R
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
@@ -21,6 +27,7 @@ import org.zotero.android.uicomponents.library.LibraryGroup
 import org.zotero.android.uicomponents.library.LibraryMetrics
 import org.zotero.android.uicomponents.library.LibraryRow
 import org.zotero.android.uicomponents.library.LibraryScaffold
+import org.zotero.android.uicomponents.library.LibraryBadge
 
 @Composable
 internal fun SettingsScreen(
@@ -91,29 +98,42 @@ internal fun SettingsContent(
     ) {
         item {
             LibraryGroup {
-                LibraryRow(stringResource(Strings.settings_sync_account), toAccountScreen)
+                LibraryRow(stringResource(Strings.settings_sync_account), toAccountScreen,
+                    leading = { LibraryBadge(R.drawable.ic_native_person, Color(0xFF007AFF)) })
             }
         }
         item {
             LibraryGroup {
-                LibraryRow(stringResource(Strings.settings_export_title), toQuickCopyScreen)
+                LibraryRow(stringResource(Strings.settings_export_title), toQuickCopyScreen,
+                    leading = { LibraryBadge(R.drawable.ic_native_copy, Color(0xFF5856D6)) })
                 LibraryDivider()
-                LibraryRow(stringResource(Strings.settings_cite_title), toCiteScreen)
-            }
-        }
-        item {
-            LibraryGroup {
-                LibraryRow(stringResource(Strings.settings_debug), toDebugScreen)
-            }
-        }
-        item {
-            LibraryGroup {
-                LibraryRow(stringResource(Strings.support_feedback), openSupport)
-                LibraryDivider()
-                LibraryRow(stringResource(Strings.privacy_policy), openPrivacyPolicy)
+                LibraryRow(stringResource(Strings.settings_cite_title), toCiteScreen,
+                    leading = { LibraryBadge(R.drawable.ic_native_quote, Color(0xFFFF9500)) })
             }
         }
         item { preferencesContent() }
+        item {
+            LibraryGroup {
+                LibraryRow(stringResource(Strings.settings_debug), toDebugScreen,
+                    leading = { LibraryBadge(R.drawable.ic_native_debug, Color(0xFF8E8E93)) })
+            }
+        }
+        item {
+            LibraryGroup {
+                LibraryRow(stringResource(Strings.support_feedback), openSupport,
+                    leading = { LibraryBadge(R.drawable.ic_native_help, Color(0xFF30A46C)) })
+                LibraryDivider()
+                LibraryRow(stringResource(Strings.privacy_policy), openPrivacyPolicy,
+                    leading = { LibraryBadge(R.drawable.ic_native_shield, Color(0xFF007AFF)) })
+            }
+        }
         item { updateContent() }
+        item {
+            Column(Modifier.fillMaxWidth().padding(bottom = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("Zotero", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(org.zotero.android.BuildConfig.VERSION_NAME, style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
     }
 }

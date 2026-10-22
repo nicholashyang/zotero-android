@@ -4,6 +4,11 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -69,24 +74,48 @@ internal fun NativeLoginForm(state: LoginViewState, onSignIn: (String, String) -
     val submit = { if (!state.nativeBusy && username.isNotBlank() && password.isNotEmpty()) {
         keyboard?.hide(); onSignIn(username, password); password = ""
     } }
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Spacer(Modifier.height(24.dp))
-        Text(stringResource(R.string.mobile_login_title), style = MaterialTheme.typography.headlineLarge)
-        Text(stringResource(R.string.mobile_login_description), color = MaterialTheme.colorScheme.onSurfaceVariant)
-        OutlinedTextField(username, { username = it }, label = { Text(stringResource(R.string.mobile_username)) }, singleLine = true,
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+    Column(Modifier.widthIn(max = 460.dp).fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        Spacer(Modifier.height(16.dp))
+        Box(Modifier.size(76.dp).background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(20.dp)),
+            contentAlignment = Alignment.Center) {
+            Icon(painterResource(R.drawable.ic_native_book), null, Modifier.size(40.dp), tint = MaterialTheme.colorScheme.primary)
+        }
+        Text(stringResource(R.string.mobile_login_title), style = MaterialTheme.typography.headlineLarge, textAlign = TextAlign.Center)
+        Text(stringResource(R.string.mobile_login_description), color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+        LibraryGroup {
+        TextField(username, { username = it }, label = { Text(stringResource(R.string.mobile_username)) }, singleLine = true,
+            shape = RoundedCornerShape(0.dp), colors = loginFieldColors(),
             enabled = !state.nativeBusy, modifier = Modifier.fillMaxWidth().semantics { contentType = ContentType.Username },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next))
-        OutlinedTextField(password, { password = it }, label = { Text(stringResource(R.string.mobile_password)) }, singleLine = true,
+        LibraryDivider()
+        TextField(password, { password = it }, label = { Text(stringResource(R.string.mobile_password)) }, singleLine = true,
+            shape = RoundedCornerShape(0.dp), colors = loginFieldColors(),
             enabled = !state.nativeBusy, modifier = Modifier.fillMaxWidth().semantics { contentType = ContentType.Password },
             visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = { TextButton(onClick = { visible = !visible }) { Text(stringResource(if (visible) R.string.mobile_hide_password else R.string.mobile_show_password)) } },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Go), keyboardActions = KeyboardActions(onGo = { submit() }))
+        }
         state.nativeError?.let { Text(stringResource(it), color = MaterialTheme.colorScheme.error) }
-        Button(onClick = { submit() }, enabled = !state.nativeBusy && username.isNotBlank() && password.isNotEmpty(), modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+        Button(onClick = { submit() }, enabled = !state.nativeBusy && username.isNotBlank() && password.isNotEmpty(), modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp), shape = RoundedCornerShape(14.dp)) {
             Text(stringResource(if (state.nativeBusy) R.string.mobile_login_busy else R.string.mobile_login))
         }
         TextButton(onClick = onForgot) { Text(stringResource(R.string.mobile_forgot)) }
-        OutlinedButton(onClick = { password = ""; onWeb() }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.mobile_login_web)) }
+        OutlinedButton(onClick = { password = ""; onWeb() }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp), shape = RoundedCornerShape(14.dp)) { Text(stringResource(R.string.mobile_login_web)) }
         TextButton(onClick = onRegister, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.mobile_register)) }
     }
+    }
 }
+
+
+@Composable
+private fun loginFieldColors() = TextFieldDefaults.colors(
+    focusedContainerColor = MaterialTheme.colorScheme.surface,
+    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+    disabledContainerColor = MaterialTheme.colorScheme.surface,
+    focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+    unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+    disabledIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+)

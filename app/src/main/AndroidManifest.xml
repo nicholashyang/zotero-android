@@ -26,7 +26,8 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:requestLegacyExternalStorage"
-        tools:targetApi="n">
+        tools:targetApi="n"
+        android:resizeableActivity="true">
 
         <property android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY" android:value="true" />
 

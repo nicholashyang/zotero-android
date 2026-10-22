@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -23,6 +25,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.annotation.DrawableRes
+import org.zotero.android.R
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import org.zotero.android.uicomponents.Drawables
@@ -50,7 +55,7 @@ internal fun LibraryGroupItem(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val radius = 12.dp
+    val radius = LibraryMetrics.groupRadius
     val shape = RoundedCornerShape(
         topStart = if (first) radius else 0.dp,
         topEnd = if (first) radius else 0.dp,
@@ -79,11 +84,13 @@ internal fun LibraryRow(
     modifier: Modifier = Modifier,
     onLongClick: (() -> Unit)? = null,
     leading: (@Composable () -> Unit)? = null,
+    titleColor: Color = MaterialTheme.colorScheme.onSurface,
     trailing: @Composable RowScope.() -> Unit = {
         Icon(
-            painterResource(Drawables.chevron_right_24px),
+            painterResource(R.drawable.ic_native_chevron),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = MaterialTheme.colorScheme.outline,
+            modifier = Modifier.size(16.dp),
         )
     },
 ) {
@@ -106,10 +113,26 @@ internal fun LibraryRow(
         Text(
             text = title,
             modifier = Modifier.weight(1f),
-            color = MaterialTheme.colorScheme.onSurface,
+            color = titleColor,
             style = MaterialTheme.typography.bodyLarge,
         )
         Spacer(Modifier.width(8.dp))
         trailing()
+    }
+}
+
+@Composable
+internal fun LibrarySection(title: String, content: @Composable ColumnScope.() -> Unit) {
+    Column {
+        Text(title, Modifier.padding(start = LibraryMetrics.pageInset, bottom = 8.dp),
+            style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        LibraryGroup(content = content)
+    }
+}
+
+@Composable
+internal fun LibraryBadge(@DrawableRes icon: Int, color: Color) {
+    Box(Modifier.size(30.dp).clip(RoundedCornerShape(7.dp)).background(color), contentAlignment = Alignment.Center) {
+        Icon(painterResource(icon), null, Modifier.size(19.dp), tint = Color.White)
     }
 }

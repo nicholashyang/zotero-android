@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import org.zotero.android.architecture.ui.CustomLayoutSize
 import org.zotero.android.screens.libraries.table.LibrariesTable
 import org.zotero.android.uicomponents.Strings
 import org.zotero.android.uicomponents.library.LibraryErrorState
@@ -26,7 +25,6 @@ internal fun LibrariesScreen(
     onSettingsTapped: () -> Unit,
     onExitApp:() -> Unit,
 ) {
-    val layoutType = CustomLayoutSize.calculateLayoutType()
     val viewState by viewModel.viewStates.observeAsState(LibrariesViewState())
     val viewEffect by viewModel.viewEffects.observeAsState()
 
@@ -37,7 +35,7 @@ internal fun LibrariesScreen(
         })
 
     LaunchedEffect(key1 = viewModel) {
-        viewModel.init(isTablet = layoutType.isTablet())
+        viewModel.init(isTablet = false)
     }
 
     LaunchedEffect(key1 = viewEffect) {

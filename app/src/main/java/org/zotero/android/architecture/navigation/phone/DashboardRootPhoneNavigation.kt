@@ -31,7 +31,7 @@ import org.zotero.android.architecture.navigation.toVideoPlayerScreen
 import org.zotero.android.architecture.navigation.toZoteroWebViewScreen
 import org.zotero.android.architecture.navigation.videoPlayerScreen
 import org.zotero.android.architecture.navigation.zoterWebViewScreen
-import org.zotero.android.pdf.pdfReaderNavScreensForPhone
+import org.zotero.android.pdf.pdfReaderScreenAndNavigationForTablet
 import org.zotero.android.pdf.toPdfScreen
 import org.zotero.android.screens.addbyidentifier.ui.AddByIdentifierScreen
 import org.zotero.android.screens.citation.singlecitation.SingleCitationScreen
@@ -44,7 +44,7 @@ import org.zotero.android.screens.creatoredit.creatorEditNavScreens
 import org.zotero.android.screens.creatoredit.toCreatorEdit
 import org.zotero.android.screens.dashboard.DashboardViewEffect
 import org.zotero.android.screens.filter.FilterScreenPhone
-import org.zotero.android.screens.reader.readerNavScreensForPhone
+import org.zotero.android.screens.reader.readerNavScreensForTablet
 import org.zotero.android.screens.reader.toReaderScreen
 import org.zotero.android.screens.retrievemetadata.RetrieveMetadataScreen
 import org.zotero.android.screens.scanbarcode.ui.ScanBarcodeScreen
@@ -60,7 +60,7 @@ import java.io.File
 internal const val ARG_ADD_BY_IDENTIFIER = "addByIdentifierArg"
 
 @Composable
-internal fun DashboardRootPhoneNavigation(
+internal fun DashboardRootAdaptiveNavigation(
     collectionDefaultValue: String,
     onPickFile: (callPoint: EventBusConstants.FileWasSelected.CallPoint) -> Unit,
     onOpenFile: (file: File, mimeType: String) -> Unit,
@@ -257,10 +257,11 @@ internal fun DashboardRootPhoneNavigation(
         videoPlayerScreen()
         imageViewerScreen(onBack = navigation::onBack)
 
-        pdfReaderNavScreensForPhone(
+        pdfReaderScreenAndNavigationForTablet(
             onExportPdf = onExportPdf,
             navigation = navigation,
-            navigateToTagPicker = navigation::toTagPicker
+            navController = navController,
+            navigateToTagPickerDialog = navigation::toTagPicker
         )
         addNoteScreen(
             onBack = navigation::onBack,
@@ -274,7 +275,8 @@ internal fun DashboardRootPhoneNavigation(
         ) {
             SingleCitationScreen(onBack = navigation::onBack)
         }
-        readerNavScreensForPhone(
+        readerNavScreensForTablet(
+            navController = navController,
             navigation = navigation,
             navigateToTagPicker = navigation::toTagPicker,
             onOpenWebpage = onOpenWebpage,

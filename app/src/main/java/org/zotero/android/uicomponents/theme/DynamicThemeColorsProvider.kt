@@ -20,21 +20,21 @@ interface DynamicThemeColorsProvider {
 @Suppress("MagicNumber")
 data class DynamicThemeColors(
     val light: DynamicTheme = DynamicTheme(
-        primaryColor = Color(0xFF008CFF),
+        primaryColor = Color(0xFF0066CC),
         shadeOne = Color(0xFF4DAEFF),
         shadeTwo = Color(0xFF90C7F2),
         shadeThree = Color(0xFFCCE8FF),
         shadeFour = Color(0xFFE6F4FF),
-        highlightColor = Color(0xFF008CFF),
+        highlightColor = Color(0xFF0066CC),
         buttonTextColor = Color(0xFFFFFFFF),
     ),
     val dark: DynamicTheme = DynamicTheme(
-        primaryColor = Color(0xFF008CFF),
+        primaryColor = Color(0xFF64ACFF),
         shadeOne = Color(0xFF0070CC),
         shadeTwo = Color(0xFF005499),
         shadeThree = Color(0xFF003866),
         shadeFour = Color(0xFF001C33),
-        highlightColor = Color(0xFF008CFF),
+        highlightColor = Color(0xFF64ACFF),
         buttonTextColor = Color(0xFFFFFFFF),
     ),
 )

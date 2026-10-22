@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -81,9 +82,7 @@ internal fun OnboardingScreen(
         }
     }
 
-    val whiteColor = Color.White
-    val blackColor = Color.Black
-    val backgroundColor = if (isSystemInDarkTheme()) blackColor else whiteColor
+    val backgroundColor = MaterialTheme.colorScheme.background
     val layoutType = CustomLayoutSize.calculateLayoutType()
     Column(
         modifier = Modifier
@@ -122,14 +121,14 @@ internal fun OnboardingScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Column(
-                        modifier = Modifier.height(104.dp),
+                        modifier = Modifier.heightIn(min = 104.dp).padding(horizontal = 16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(
                             text = safeStringResource(onboardingPage.taglineRes),
                             color = MaterialTheme.colorScheme.onSurface,
                             textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.titleLargeEmphasized
+                            style = MaterialTheme.typography.headlineSmall
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(

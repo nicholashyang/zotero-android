@@ -11,6 +11,7 @@ import org.zotero.android.screens.libraries.data.LibraryRowData
 import org.zotero.android.screens.libraries.data.LibraryState
 import org.zotero.android.uicomponents.Drawables
 import org.zotero.android.uicomponents.library.LibraryRow
+import org.zotero.android.uicomponents.library.librarySymbol
 
 @Composable
 internal fun LibrariesItem(item: LibraryRowData, onItemTapped: () -> Unit, onItemLongTapped: () -> Unit) {
@@ -20,7 +21,7 @@ internal fun LibrariesItem(item: LibraryRowData, onItemTapped: () -> Unit, onIte
         onLongClick = onItemLongTapped,
         leading = {
             Icon(
-                painter = painterResource(image(item.state)),
+                painter = painterResource(librarySymbol(image(item.state))),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
                 tint = MaterialTheme.colorScheme.primary,

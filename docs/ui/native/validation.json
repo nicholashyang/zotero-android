@@ -1,0 +1,16 @@
+{
+  "localJvm": {
+    "tests": 84,
+    "failures": 0
+  },
+  "localUi": {
+    "api": 35,
+    "phone": 50,
+    "unfolded": 7,
+    "landscape": 7,
+    "hingeRepeat": 1
+  },
+  "sourceVersionDuringInitialUiCapture": "1.1.0-283",
+  "releaseVersion": "1.2.0-284",
+  "foldEvidence": "Synthetic reported fold bounds on an isolated API 35 emulator; physical foldable hardware not exercised."
+}

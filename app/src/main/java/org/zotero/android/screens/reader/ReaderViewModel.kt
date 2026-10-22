@@ -171,6 +171,11 @@ class ReaderViewModel @Inject constructor(
 
     private var isTablet: Boolean = false
 
+    fun updateWindowLayout(isWide: Boolean) {
+        isTablet = isWide
+    }
+
+
     private var disableForceScreenOnTimer: Timer? = null
 
     private var item: RItem? = null

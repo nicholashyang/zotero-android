@@ -93,6 +93,7 @@ fun NavGraphBuilder.allItemsScreen(
             }
         }) {
         AllItemsScreen(
+            usesTabletNavigation = isTablet,
             onPickFile = onPickFile,
             onOpenFile = onOpenFile,
             onOpenWebpage = onOpenWebpage,
@@ -286,6 +287,7 @@ fun NavGraphBuilder.collectionsScreen(
         },
     ) {
         CollectionsScreen(
+            usesTabletNavigation = isTablet,
             onBack = onBack,
             navigateToAllItems = navigateToAllItems,
             navigateToLibraries = navigateToLibraries,

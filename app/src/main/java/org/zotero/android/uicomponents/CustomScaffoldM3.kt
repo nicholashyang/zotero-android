@@ -1,5 +1,7 @@
 package org.zotero.android.uicomponents
 
+import androidx.compose.foundation.layout.fillMaxSize
+import org.zotero.android.architecture.ui.FoldSafeContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -25,7 +27,7 @@ fun CustomScaffoldM3(
     bottomBar: @Composable () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior? = null,
 //    topBarColor: Color = MaterialTheme.colorScheme.surface,
-    containerColor: Color = MaterialTheme.colorScheme.surface,
+    containerColor: Color = MaterialTheme.colorScheme.background,
     content: @Composable (PaddingValues) -> Unit
 ) {
 
@@ -34,36 +36,38 @@ fun CustomScaffoldM3(
     if (scrollBehavior != null) {
         newModifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     }
-    Scaffold(
-        modifier = newModifier,
-        topBar = topBar,
-//        topBar = {
-//            val modifierTopBar = Modifier
-//                .background(topBarColor)
-//                .windowInsetsPadding(TopAppBarDefaults.windowInsets)
-//            Box(modifier = modifierTopBar) {
-//                topBar()
-//            }
-//        },
-        bottomBar = bottomBar,
-        snackbarHost = {
-            CustomSnackbarHost(
-                state = snackbarHostState,
-                snackbarMessage = snackbarMessage
-            )
-        },
-        containerColor = containerColor,
-        content = { it ->
-//            Box(modifier = Modifier.background(containerColor)) {
+    FoldSafeContent(Modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = newModifier,
+            topBar = topBar,
+    //        topBar = {
+    //            val modifierTopBar = Modifier
+    //                .background(topBarColor)
+    //                .windowInsetsPadding(TopAppBarDefaults.windowInsets)
+    //            Box(modifier = modifierTopBar) {
+    //                topBar()
+    //            }
+    //        },
+            bottomBar = bottomBar,
+            snackbarHost = {
+                CustomSnackbarHost(
+                    state = snackbarHostState,
+                    snackbarMessage = snackbarMessage
+                )
+            },
+            containerColor = containerColor,
+            content = { it ->
+    //            Box(modifier = Modifier.background(containerColor)) {
 
-            var modifier: Modifier = Modifier
-            if (shouldIncludeTopBarAndNavBarPaddings) {
-                modifier = modifier.padding(top = it.calculateTopPadding())
-            }
-            Box(modifier = modifier) {
-                content(it)
-            }
-//            }
-        },
-    )
+                var modifier: Modifier = Modifier
+                if (shouldIncludeTopBarAndNavBarPaddings) {
+                    modifier = modifier.padding(top = it.calculateTopPadding())
+                }
+                Box(modifier = modifier) {
+                    content(it)
+                }
+    //            }
+            },
+        )
+    }
 }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -111,6 +112,7 @@ internal fun ReaderScreen(
         val focusManager = LocalFocusManager.current
         val annotationsLazyListState = rememberLazyListState()
         val layoutType = CustomLayoutSize.calculateLayoutType()
+        SideEffect { viewModel.updateWindowLayout(layoutType.isTablet()) }
         LaunchedEffect(key1 = viewEffect) {
             when (val consumedEffect = viewEffect?.consume()) {
                 is ReaderViewEffect.NavigateBack -> {

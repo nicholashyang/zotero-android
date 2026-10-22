@@ -1,7 +1,17 @@
 package org.zotero.android.uicomponents.library
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.SolidColor
+import org.zotero.android.R
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,8 +21,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -49,34 +56,33 @@ internal fun LibrarySearchField(query: String, onQueryChange: (String) -> Unit) 
             .padding(bottom = 12.dp).focusRequester(restingFocus).focusable(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TextField(
+        BasicTextField(
             value = query,
             onValueChange = onQueryChange,
-            modifier = Modifier.weight(1f).onFocusChanged { focused = it.isFocused },
+            modifier = Modifier.weight(1f).heightIn(min = 44.dp)
+                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(11.dp))
+                .onFocusChanged { focused = it.isFocused },
             singleLine = true,
-            shape = LibraryMetrics.groupShape,
-            textStyle = MaterialTheme.typography.bodyLarge,
-            placeholder = { Text(stringResource(Strings.items_search_title)) },
-            leadingIcon = {
-                Icon(painterResource(Drawables.search_24px), contentDescription = null)
-            },
-            trailingIcon = {
-                if (query.isNotEmpty()) {
-                    LibraryIconButton(
-                        Drawables.ic_close_24dp,
-                        stringResource(Strings.searchbar_accessibility_clear),
-                        onClick = { onQueryChange("") },
-                    )
-                }
-            },
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-            ),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+            textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { finishInput() }),
+            decorationBox = { input ->
+                Row(Modifier.padding(start = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(painterResource(R.drawable.ic_native_search), null,
+                        Modifier.size(19.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(Modifier.width(8.dp))
+                    Box(Modifier.weight(1f).padding(vertical = 10.dp)) {
+                        if (query.isEmpty()) Text(stringResource(Strings.items_search_title),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        input()
+                    }
+                    if (query.isNotEmpty()) LibraryIconButton(Drawables.ic_close_24dp,
+                        stringResource(Strings.searchbar_accessibility_clear), { onQueryChange("") })
+                    else Spacer(Modifier.width(12.dp))
+                }
+            },
         )
         if (focused || query.isNotEmpty()) {
             TextButton(onClick = {

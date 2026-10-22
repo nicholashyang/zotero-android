@@ -36,7 +36,7 @@ grep -q "versionCode=$expected_code " device-results/package.txt
 grep -q retained device-results/upgrade-marker.txt
 install_apk "$test_apk"
 "$adb_bin" -s "$serial" shell am instrument -w \
-  -e class org.zotero.android.library.AppUpdateTest,org.zotero.android.library.LibraryInteractionTest,org.zotero.android.library.LibraryScreenshotTest,org.zotero.android.library.MobileUiTest,org.zotero.android.library.ItemCoverTest \
+  -e class org.zotero.android.library.AppUpdateTest,org.zotero.android.library.LibraryInteractionTest,org.zotero.android.library.LibraryScreenshotTest,org.zotero.android.library.MobileUiTest,org.zotero.android.library.ItemCoverTest,org.zotero.android.library.AdaptiveLibraryTest \
   org.zotero.android.debug.test/org.zotero.android.library.LibraryTestRunner | tee device-results/instrumentation.txt
 grep -qE '^OK \([0-9]+ tests?\)' device-results/instrumentation.txt
 # Root is limited to test orchestration on this isolated emulator. Instrumentation
@@ -63,3 +63,20 @@ echo 'Checking offline download recovery'
   -e class org.zotero.android.library.UpdateRecoveryTest -e runOfflineUpdateTests true \
   org.zotero.android.debug.test/org.zotero.android.library.LibraryTestRunner | tee device-results/recovery.txt
 grep -q '^OK (4 tests)' device-results/recovery.txt
+
+# Exercise the unfolded window on the newest matrix device without replacing
+# the navigation graph. The regular suite above covers its compact window.
+if [ "$("$adb_bin" -s "$serial" shell getprop ro.build.version.sdk | tr -d '\r')" -ge 36 ]; then
+  "$adb_bin" -s "$serial" shell wm size 1680x1800
+  "$adb_bin" -s "$serial" shell wm density 320
+  "$adb_bin" -s "$serial" shell am instrument -w \
+    -e class org.zotero.android.library.AdaptiveLibraryTest \
+    org.zotero.android.debug.test/org.zotero.android.library.LibraryTestRunner | tee device-results/foldable.txt
+  "$adb_bin" -s "$serial" shell wm size reset
+  "$adb_bin" -s "$serial" shell wm density reset
+  grep -q '^OK (7 tests)' device-results/foldable.txt
+  "$adb_bin" -s "$serial" shell tar -cf /data/local/tmp/zotero-foldable-screenshots.tar \
+    -C /data/data/org.zotero.android.debug/files/ui-screenshots .
+  "$adb_bin" -s "$serial" pull /data/local/tmp/zotero-foldable-screenshots.tar device-results/foldable-screenshots.tar
+  "$adb_bin" -s "$serial" shell rm -f /data/local/tmp/zotero-foldable-screenshots.tar
+fi

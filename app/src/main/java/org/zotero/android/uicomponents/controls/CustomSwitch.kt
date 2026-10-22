@@ -12,6 +12,7 @@ import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.zotero.android.uicomponents.theme.CustomTheme
@@ -21,7 +22,14 @@ fun CustomSwitch(
     checked: Boolean,
     modifier: Modifier = Modifier,
     onCheckedChange: ((Boolean) -> Unit)? = null,
-    colors: SwitchColors = SwitchDefaults.colors(),
+    colors: SwitchColors = SwitchDefaults.colors(
+        checkedTrackColor = Color(0xFF248A3D),
+        checkedThumbColor = Color.White,
+        checkedBorderColor = Color.Transparent,
+        uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+        uncheckedThumbColor = Color.White,
+        uncheckedBorderColor = Color.Transparent,
+    ),
     enabled: Boolean = true,
 ) {
     Switch(

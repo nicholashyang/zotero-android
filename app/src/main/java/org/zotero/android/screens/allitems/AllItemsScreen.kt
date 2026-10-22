@@ -7,6 +7,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +29,7 @@ import org.zotero.android.uicomponents.loading.CircularLoading
 @Composable
 internal fun AllItemsScreen(
     viewModel: AllItemsViewModel = hiltViewModel(),
+    usesTabletNavigation: Boolean = false,
     onPickFile: () -> Unit,
     onOpenFile: (file: File, mimeType: String) -> Unit,
     onOpenWebpage: (url: String) -> Unit,
@@ -51,18 +55,27 @@ internal fun AllItemsScreen(
     val viewState by viewModel.viewStates.observeAsState(AllItemsViewState())
     val viewEffect by viewModel.viewEffects.observeAsState()
     val lazyListState = rememberLazyListState()
-    LaunchedEffect(viewState.libraryName, viewState.collectionName) { lazyListState.scrollToItem(0) }
+    val selection = viewState.libraryName to viewState.collectionName
+    var previousLibrary by rememberSaveable { mutableStateOf(selection.first) }
+    var previousCollection by rememberSaveable { mutableStateOf(selection.second) }
+    LaunchedEffect(selection) {
+        if (previousLibrary != selection.first || previousCollection != selection.second) {
+            lazyListState.scrollToItem(0)
+            previousLibrary = selection.first
+            previousCollection = selection.second
+        }
+    }
 
     val isTablet = layoutType.isTablet()
 
-    if (!isTablet)  {
+    if (!usesTabletNavigation)  {
         BackHandler(onBack = {
             viewModel.navigateToCollections()
         })
     }
 
     LaunchedEffect(key1 = viewModel) {
-        viewModel.init(isTablet)
+        viewModel.init(usesTabletNavigation)
     }
 
     LaunchedEffect(key1 = viewEffect) {

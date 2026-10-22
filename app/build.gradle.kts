@@ -157,6 +157,7 @@ play {
 }
 
 dependencies {
+    implementation("androidx.window:window:1.5.0")
     implementation("androidx.work:work-runtime-ktx:2.11.2")
 
     //Material design
