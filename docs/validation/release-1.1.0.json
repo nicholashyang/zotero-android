@@ -1,0 +1,53 @@
+{
+  "source": "c9916d4169c01d2e04d899690a9335757a3eafd7",
+  "version": "1.1.0-283",
+  "versionCode": 283,
+  "sha256": "87e9fae37f17891660b1bf1c4b5d886942805863c5d6d264ccaecc0ace501596",
+  "bytes": 183850564,
+  "package": "org.zotero.android.debug",
+  "signatureMatchesExisting": true,
+  "signingCertificateSha256": "c4e70a6935d239246540532b6d3ea514eb2a428e1e8eaacbf94c8a9a01989299",
+  "workflow": "https://github.com/nicholashyang/zotero-android/actions/runs/39841605392",
+  "release": "https://github.com/nicholashyang/zotero-android/releases/tag/dev-v1.1.0-283",
+  "tag": "dev-v1.1.0-283",
+  "publishedAt": "2026-10-22T19:56:42Z",
+  "publicLatest": true,
+  "publishedAssetDigestsMatchVerifiedCIArtifacts": true,
+  "jvmTests": 73,
+  "jvmFailures": 0,
+  "jvmSkipped": 0,
+  "deviceMatrix": {
+    "23": {
+      "uiAndUpdateAndCoverTests": 50,
+      "offlineRecoveryTests": 4,
+      "previousPublicVersion": 282,
+      "dataMarkerRetained": true
+    },
+    "26": {
+      "uiAndUpdateAndCoverTests": 50,
+      "offlineRecoveryTests": 4,
+      "previousPublicVersion": 282,
+      "dataMarkerRetained": true
+    },
+    "33": {
+      "uiAndUpdateAndCoverTests": 50,
+      "offlineRecoveryTests": 4,
+      "previousPublicVersion": 282,
+      "dataMarkerRetained": true
+    },
+    "36": {
+      "uiAndUpdateAndCoverTests": 50,
+      "offlineRecoveryTests": 4,
+      "previousPublicVersion": 282,
+      "dataMarkerRetained": true
+    }
+  },
+  "localPhoneApi": 35,
+  "localPhoneUiAndUpdateAndCoverTests": 50,
+  "localPhoneOfflineRecoveryTests": 4,
+  "localPhoneUpgradeDataMarkerRetained": true,
+  "lintFindings": 1278,
+  "newCoverFileLintFindings": 0,
+  "accountLoginAndFirstSync": "not exercised with a real account",
+  "liveUpdateTest": "not run for this release"
+}
